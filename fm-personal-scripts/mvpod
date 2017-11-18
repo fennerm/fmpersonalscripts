@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+
+for d in "~/podcast/*" 
+do
+    eval mv -v "${d}/*" "/media/fenner/0123-4567/PODCASTS/"
+done
