@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # Use tdrop to create a drop down terminal. Command is bound to <F12>.
 # See: https://github.com/noctuid/tdrop
 #      https://github.com/thestinger/termite
