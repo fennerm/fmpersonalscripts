@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+## Connect to University of Idaho CRC servers
+
+( sudo openvpn --config $HOME/data/vpn_certs/schaack-crc.ovpn ) &
+
+sleep 8
+
+tmuxinator start uidaho
