@@ -7,11 +7,13 @@ Usage:
 Arguments:
   NAME      Name of the python module
 """
+from __future__ import print_function
 from contextlib import redirect_stdout
 from pathlib import Path
 
 from docopt import docopt
 
+from fmbiopy.fmsystem import bash
 
 def _template()-> Path:
     """Get the path to the setup.py template"""
@@ -52,8 +54,12 @@ def gen_setup(name: str, template: Path = _template())-> None:
                     else:
                         print(line.rstrip())
 
+def gen_gitignore():
+    """Generate a .gitignore file if one doesn't already exist"""
+    bash(['gen_py_gitignore.sh'])
 
 if __name__ == '__main__':
     args = docopt(__doc__)
     name = args['NAME']
     gen_setup(name)
+    gen_gitignore()
