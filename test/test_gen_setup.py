@@ -1,6 +1,7 @@
-from fmscripts.gen_setup import *
-from fmbiopy.fmsystem import working_directory
+from plumbum import local
+
+from fmpersonalscripts.gen_setup import *
 
 def test_runs_without_error(tmpdir):
-    with working_directory(tmpdir):
+    with local.cwd(tmpdir):
         gen_setup('test')

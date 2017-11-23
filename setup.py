@@ -15,7 +15,7 @@ README = Path('README.md')
 USERNAME = 'fennerm'
 
 """Package name"""
-NAME = 'fm-personal-scripts'
+NAME = 'fmpersonalscripts'
 
 
 # =============================================================================

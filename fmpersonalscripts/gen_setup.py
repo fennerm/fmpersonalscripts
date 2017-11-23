@@ -9,22 +9,24 @@ Arguments:
 """
 from __future__ import print_function
 from contextlib import redirect_stdout
-from pathlib import Path
 
 from docopt import docopt
+from plumbum import (
+        local,
+        LocalPath,
+        )
 
-from fmbiopy.fmsystem import bash
 
-def _template()-> Path:
+def _template()-> LocalPath:
     """Get the path to the setup.py template"""
-    this_file = Path(__file__)
-    script_dir = this_file.parent
+    this_file = local.path(__file__)
+    script_dir = this_file.dirname
     module_name = this_file.with_suffix('').name
     template = script_dir / 'resources' / module_name / 'template.py'
     return template
 
 
-def gen_setup(name: str, template: Path = _template())-> None:
+def gen_setup(name: str, template: LocalPath = _template())-> None:
     """Generate a setup.py file
 
     Parameters
@@ -39,7 +41,7 @@ def gen_setup(name: str, template: Path = _template())-> None:
     FileExistsError
         If setup.py already exists
     """
-    output_path = Path('setup.py')
+    output_path = LocalPath('setup.py')
 
     if output_path.exists():
         raise FileExistsError
@@ -56,7 +58,7 @@ def gen_setup(name: str, template: Path = _template())-> None:
 
 def gen_gitignore():
     """Generate a .gitignore file if one doesn't already exist"""
-    bash(['gen_py_gitignore.sh'])
+    local['gen_py_gitignore.sh']()
 
 if __name__ == '__main__':
     args = docopt(__doc__)

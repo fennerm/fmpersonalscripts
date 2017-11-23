@@ -1,5 +1,5 @@
-pypandoc==1.4
-fmscripts.egg==info
 setuptools==28.8.0
-fmbiopy.egg==info
+plumbum==1.6.3
 docopt==0.6.2
+fmbiopy.egg==info
+pypandoc==1.4
