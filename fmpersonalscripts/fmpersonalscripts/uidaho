@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+## Connect to University of Idaho CRC servers
+
+activate_crc_vpn.sh
+
+sshfs -o Ciphers=arcfour -o Compression=no "$UI:/mnt/lfs2/schaack/$DATHOME/ui"
+
+tmuxinator start uidaho
