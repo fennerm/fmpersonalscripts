@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-
 for d in "~/data/podcasts/*"
 do
-    eval mv -v "${d}/*" "/media/$USERNAME/0123-4567/PODCASTS/"
+	eval mv -v "${d}/*" "/media/$USER/0123-4567/PODCASTS/"
 done
