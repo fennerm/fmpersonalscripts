@@ -48,13 +48,12 @@ def symlink_dir(d, base, mint_only, arch_only):
     arch_only: List[str]
         List of files or directories which should not be linked for Arch
     """
-    base = base / d.name
-    if base.exists():
-        warn("DOTFILE WARNING: Conficting file present at " + base)
-    else:
-        base.mkdir()
-    for f in d.list():
-        symlink_dotfile(f, base, mint_only, arch_only)
+    if not d.name == '.git':
+        base = base / d.name
+        if not base.exists():
+            base.mkdir()
+        for f in d.list():
+            symlink_dotfile(f, base, mint_only, arch_only)
 
 def symlink_dotfile(f, base, mint_only, arch_only):
     """Symlink a config file
