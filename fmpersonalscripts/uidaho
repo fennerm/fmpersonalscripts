@@ -3,5 +3,4 @@
 
 activate_crc_vpn.sh
 
-sshfs -o Compression=no,Ciphers=blowfish-cbc "$UI:/mnt/lfs2/schaack/fmacrae" \
-    "$DATHOME/ui"
+sshfs -o Compression=yes "$UI:/mnt/lfs2/schaack/fmacrae" "$DATHOME/ui"
