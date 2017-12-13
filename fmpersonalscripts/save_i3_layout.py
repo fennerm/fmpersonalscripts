@@ -17,9 +17,11 @@ from fmbiopy.fmparse import helpful_docopt
 from fmi3lib import focused_workspace
 from plumbum import local
 
+
 def is_comment(line):
     """True if line is a .json comment field"""
     return line.strip().startswith('//')
+
 
 def is_swallow_field(line):
     """True if line is one of the 'swallow' fields in the .json"""
@@ -27,21 +29,25 @@ def is_swallow_field(line):
                       r'"transient_for":']
     return any(x in line for x in swallow_fields)
 
+
 def is_transient_for_field(line):
     """True if line is the transient_for field"""
     return r'"transient_for":' in line
+
 
 def has_trailing_comma(line):
     """True if line has a trailing comma"""
     return line.rstrip().endswith(",")
     
+
 def uncomment(line):
     """Remove .json comment chars from line"""
     return line.replace('/', ' ', 2)
 
+
 def reformat_json(json, outfile):
     """Remove the comment fields from a json formatted string and write to file
-    
+   
     Parameters
     ----------
     json: str
