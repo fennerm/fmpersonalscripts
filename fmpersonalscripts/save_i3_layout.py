@@ -4,17 +4,17 @@
 File is saved in the directory pointed to by the I3LAYOUTS environment variable.
 
 Usage:
-  save_i3_layout.py NAME
+  save_i3_layout.py WORKSPACE NAME
   save_i3_layout.py (-h | --help)
 
 Inputs:
     NAME        Filename prefix for the output .json.
+    WORKSPACE   The workspace to save
 Options:
   -h, --help    Show this screen
 """
 from __future__ import print_function
 from fmbiopy.fmparse import helpful_docopt
-from fmi3lib import focused_workspace
 from plumbum import local
 
 
@@ -38,7 +38,7 @@ def is_transient_for_field(line):
 def has_trailing_comma(line):
     """True if line has a trailing comma"""
     return line.rstrip().endswith(",")
-    
+
 
 def uncomment(line):
     """Remove .json comment chars from line"""
@@ -47,7 +47,7 @@ def uncomment(line):
 
 def reformat_json(json, outfile):
     """Remove the comment fields from a json formatted string and write to file
-   
+
     Parameters
     ----------
     json: str
@@ -69,10 +69,10 @@ def reformat_json(json, outfile):
             # If line starts with '//' but is not a swallow field then we just
             # ignore it
 
-def main(outfile):
+def main(outfile, workspace):
     # Save the workspace to a json formatted string
     save = local['i3-save-tree']
-    _, stdout, _ = save.run(['--workspace', focused_workspace()])
+    _, stdout, _ = save.run(['--workspace', workspace])
     # Uncomment the json
     reformat_json(stdout, outfile)
 
@@ -80,4 +80,4 @@ if __name__ == "__main__":
     opts = helpful_docopt(__doc__)
     outdir = local.path(local.env['I3LAYOUTS'])
     outfile = outdir / (opts['NAME'] + '.json')
-    main(outfile)
+    main(outfile, opts['WORKSPACE'])
