@@ -44,9 +44,6 @@ def gen_mock_dots(sandbox):
     mock_dots['no_conflict'].touch()
     mock_dots['not_broken_here'] = mock_dots['dots'] / 'broken_link'
     mock_dots['not_broken_here'].touch()
-    mock_dots['exclude'] = mock_dots['dots'] / 'exclude'
-    mock_dots['exclude'].touch()
-    mock_dots['exclude'] = str(mock_dots['exclude'])
     mock_dots['two_dots'] = mock_dots['dots'] / '.foo.bar'
     mock_dots['two_dots'].touch()
     yield mock_dots
@@ -55,8 +52,7 @@ def gen_mock_dots(sandbox):
 @fixture(name="resultant_dirs")
 def gen_resultant_dirs(mock_home, mock_dots):
     symlink_all_dotfiles(
-        dots=mock_dots['dots'], home=mock_home['home'],
-        arch_only=mock_dots['exclude'], mint_only=mock_dots['exclude'])
+        dots=mock_dots['dots'], home=mock_home['home'])
 
 def test_conflicts_not_overwritten(resultant_dirs, mock_home, mock_dots):
     assert mock_home['config_file'].read() == 'foo'
@@ -66,9 +62,6 @@ def test_no_conflicts_linked(resultant_dirs, mock_home, mock_dots):
 
 def test_config_dir_not_linked(resultant_dirs, mock_home, mock_dots):
     assert not mock_home['xdg_home'].is_symlink()
-
-def test_excludes_are_excluded(resultant_dirs, mock_home, mock_dots):
-    assert not (mock_home['home'] / 'exclude').exists()
 
 def test_contained_file_linked(resultant_dirs, mock_home, mock_dots):
     assert (mock_home['home'] / 'dir2' / 'con_file').exists()

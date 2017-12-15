@@ -25,14 +25,13 @@ def is_comment(line):
 
 def is_swallow_field(line):
     """True if line is one of the 'swallow' fields in the .json"""
-    swallow_fields = [r'"class":', r'"instance":', r'"title":',
-                      r'"transient_for":']
+    swallow_fields = [r'"class":', r'"instance":']
     return any(x in line for x in swallow_fields)
 
 
-def is_transient_for_field(line):
+def is_instance_field(line):
     """True if line is the transient_for field"""
-    return r'"transient_for":' in line
+    return r'"instance":' in line
 
 
 def has_trailing_comma(line):
@@ -62,7 +61,7 @@ def reformat_json(json, outfile):
             elif is_swallow_field(line):
                 # If it is a swallow field, uncomment it and print
                 line = uncomment(line).rstrip()
-                if is_transient_for_field(line) and has_trailing_comma(line):
+                if is_instance_field(line) and has_trailing_comma(line):
                     # Remove the trailing comma
                     line = line[:-1]
                 f.write(line + "\n")
