@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+## Personal replacement for SSHRC utility
+## Script SSH's into a given server name on CRC and then sources my .zshrc
+## Usage:
+##   fsshrc tesla
+REMOTE="schaack@${1}.ibest.uidaho.edu"
+ssh -t "$REMOTE" 'source fmacrae/dotfiles/.zshrc'
