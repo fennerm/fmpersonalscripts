@@ -4,4 +4,4 @@
 ## Usage:
 ##   fsshrc tesla
 REMOTE="schaack@${1}.ibest.uidaho.edu"
-ssh -t "$REMOTE" 'source fmacrae/dotfiles/.zshrc'
+ssh -Xt "$REMOTE" 'source fmacrae/dotfiles/.zshrc'
