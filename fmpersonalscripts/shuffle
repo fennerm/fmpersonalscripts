@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 ## Open ncmpcpp and shuffle all songs
 (ashuffle &)
-ncmpcpp
+ncmpcpp -s visualizer
