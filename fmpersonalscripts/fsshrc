@@ -3,5 +3,6 @@
 ## Script SSH's into a given server name on CRC and then sources my .zshrc
 ## Usage:
 ##   fsshrc tesla
+activate_crc_vpn.sh
 REMOTE="schaack@${1}.ibest.uidaho.edu"
 ssh -Xt "$REMOTE" 'source fmacrae/dotfiles/.zshrc'
