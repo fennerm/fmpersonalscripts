@@ -5,4 +5,4 @@
 ##   fsshrc tesla
 activate_crc_vpn.sh
 REMOTE="schaack@${1}.ibest.uidaho.edu"
-ssh -Xt "$REMOTE" 'source fmacrae/dotfiles/.zshrc'
+ssh -Xt "$REMOTE" "ZDOTDIR=fmacrae/dotfiles /mnt/lfs2/schaack/.linuxbrew/bin/zsh --no-globalrcs"
