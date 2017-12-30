@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 
-for d in "~/data/podcasts/*"
+# Mount the mp3 player if necessary
+sudo mkdir -p "/mnt/clip"
+sudo mount "/dev/sda1" "/mnt/clip"
+
+# Move the episodes
+for f in "/home/data/podcasts/*"
 do
-	eval mv -v "${d}/*" "/media/$USER/0123-4567/PODCASTS/"
+    if [[ -d "$f" ]]; then
+        if eval cp -vr "${f}/*" "/mnt/clip/PODCASTS/"; then
+            rm "$f/*"
+        fi
+    else
+        if eval cp -v "$f" "/mnt/0123-4567/PODCASTS/"; then
+            rm "$f"
+        fi
+    fi
 done
