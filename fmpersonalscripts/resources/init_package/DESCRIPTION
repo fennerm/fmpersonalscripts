@@ -1,8 +1,7 @@
 Package: _
 Title: _
 Version: 0.0.0.1
-Authors@R: person("Fenner", "Macrae", email =
-"13209544+fennerm@users.noreply.github.com", role = c("aut", "cre"))
+Authors@R: person("Fenner", "Macrae", email = "13209544+fennerm@users.noreply.github.com", role = c("aut", "cre"))
 Description: _
 License: MIT
 Encoding: UTF-8
