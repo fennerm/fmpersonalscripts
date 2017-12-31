@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-# Switch ssh host at IBEST
-
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    exit
-fi
-fsshrc "$1"
