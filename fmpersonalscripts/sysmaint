@@ -42,7 +42,7 @@ save_old_logfile() {
 
 log_header() {
     header="$1"
-    echo "${header}\n"
+    echo "${header}"
     echo "=========================================================\n" >> "$LOG"
     echo "${header}\n" >> "$LOG"
     echo "=========================================================\n" >> "$LOG"
