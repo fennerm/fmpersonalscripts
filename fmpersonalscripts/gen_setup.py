@@ -26,7 +26,7 @@ def _template()-> LocalPath:
     return template
 
 
-def gen_setup(name: str, template: LocalPath = _template())-> None:
+def gen_setup(name, template = _template()):
     """Generate a setup.py file
 
     Parameters

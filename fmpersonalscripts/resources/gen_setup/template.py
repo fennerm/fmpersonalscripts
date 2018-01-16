@@ -1,5 +1,4 @@
 """Setup script"""
-from pathlib import Path
 from setuptools import (
         find_packages,
         setup,
@@ -9,7 +8,7 @@ from setuptools import (
 # Globals
 # =============================================================================
 """Location of the README file"""
-README = Path('README.md')
+README = 'README.md'
 
 """Github username"""
 USERNAME = 'fennerm'
@@ -23,7 +22,7 @@ NAME = ''
 # =============================================================================
 
 
-def long_description(readme: Path = README)-> str:
+def long_description(readme=README):
     """Extract the long description from the README"""
     try:
         from pypandoc import convert
@@ -33,7 +32,7 @@ def long_description(readme: Path = README)-> str:
     return long_description
 
 
-def url(name: str = NAME, username: str = USERNAME)-> str:
+def url(name=NAME, username=USERNAME):
     """Generate the package url from the package name"""
     return '/'.join(['http://github.com', username, name])
 
