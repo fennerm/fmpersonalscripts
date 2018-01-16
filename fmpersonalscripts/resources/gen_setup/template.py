@@ -28,7 +28,8 @@ def long_description(readme=README):
         from pypandoc import convert
         long_description = convert(str(readme), 'md', 'rst')
     except (ImportError, IOError, OSError):
-        long_description = readme.read_text()
+        with open(readme, 'r') as f:
+            long_description = f.read()
     return long_description
 
 
