@@ -27,8 +27,8 @@ def main(remote):
         except ProcessExecutionError:
             # Thrown if the repo is already forked
             pass
-        hub['pull']
-        hub['remote', 'add', user, remote_address]
+        hub['pull'] & FG
+        hub['remote', 'add', user, remote_address] & FG
 
 if __name__ == "__main__":
     opts = helpful_docopt(__doc__)
