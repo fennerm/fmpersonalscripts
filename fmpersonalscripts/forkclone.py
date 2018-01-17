@@ -29,6 +29,8 @@ def main(remote):
             pass
         hub['pull'] & FG
         hub['remote', 'add', user, remote_address] & FG
+        hub['branch', '--set-upstream-to=origin/master', 'master'] & FG
+
 
 if __name__ == "__main__":
     opts = helpful_docopt(__doc__)
