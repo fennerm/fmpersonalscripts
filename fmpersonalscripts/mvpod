@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Mount the mp3 player if necessary
-MOUNTPOINT="/mnt/clip"
+MOUNTPOINT="/run/media/fen-arch/EC95-4FBB"
 mkdir "$MOUNTPOINT"
 mount "/dev/sda1" "$MOUNTPOINT"
 
