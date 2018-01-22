@@ -2,8 +2,8 @@
 
 # Mount the mp3 player if necessary
 MOUNTPOINT="/run/media/fen-arch/EC95-4FBB"
-mkdir "$MOUNTPOINT"
-mount "/dev/sda1" "$MOUNTPOINT"
+#mkdir "$MOUNTPOINT"
+#mount "/dev/sda1" "$MOUNTPOINT"
 
 # Move the episodes
 for f in "/home/data/podcasts/*"
