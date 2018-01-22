@@ -1,6 +1,5 @@
 #!/bin/sh
 # Get brew and pyenv to play nice
-# This script not written by me. Credit to https://github.com/wadkar
 if which pyenv > /dev/null 2>1; then
   # assumes default location of brew in `/usr/local/bin/brew`
   /usr/bin/env PATH="${PATH//$(pyenv root)\/shims:/}" /usr/local/bin/brew "$@"
