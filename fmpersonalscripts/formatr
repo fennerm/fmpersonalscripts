@@ -1,0 +1,6 @@
+#!/usr/bin/env Rscript
+
+if (!interactive()) {
+  args <- commandArgs(trailingOnly = TRUE)
+  formatR::tidy_source(args[1], indent = 2, arrow = TRUE, width.cutoff = 80)
+} 
