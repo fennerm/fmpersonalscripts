@@ -40,8 +40,8 @@ from plumbum.cmd import rsync
 
 def local_to_remote(local_file, local_root, remote_root):
     """Convert a local path to its matched path on the remote machine"""
-    relative_local_file = os.path.relpath(local_file, local_root)
-    remote_local_file = os.path.join(remote_root, relative_local_file)
+    relative_local_file = local_file.relative_to(local_root)
+    remote_local_file = remote_root / relative_local_file
     return remote_local_file
 
 
@@ -93,6 +93,6 @@ if __name__ == '__main__':
         local_file=local_file,
         remote_address=opt["--remote"],
         max_size=max_size,
-        remote_root=opt["--remote_root"],
-        local_root=opt["--local_root"],
+        remote_root=local.path(opt["--remote_root"]),
+        local_root=local.path(opt["--local_root"]),
         exclude=opt["--exclude"])

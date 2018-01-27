@@ -2,21 +2,19 @@
 
 # Mount the mp3 player if necessary
 MOUNTPOINT="/run/media/fen-arch/EC95-4FBB"
-#mkdir "$MOUNTPOINT"
-#mount "/dev/sda1" "$MOUNTPOINT"
+DIR="$MOUNTPOINT/PODCASTS"
+mkdir "$DIR"
 
 # Move the episodes
 for f in "/home/data/podcasts/*"
 do
     if [[ -d "$f" ]]; then
-        if eval cp -v "${f}/*" "$MOUNTPOINT/PODCASTS/"; then
+        if eval cp -v "${f}/*" "$DIR"; then
             rm "$f/*"
         fi
     else
-        if eval cp -v "$f" "$MOUNTPOINT/PODCASTS/"; then
+        if eval cp -vr "$f" "$DIR"; then
             rm "$f"
         fi
     fi
 done
-
-unmount "/dev/sda1"
