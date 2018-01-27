@@ -3,7 +3,7 @@
 ## Script SSH's into a given server name on CRC and then sources my .zshrc
 ## Usage:
 ##   fsshrc tesla
-activate_crc_vpn.sh
+activate_crc_vpn.sh > /dev/null
 rsync --copy-unsafe-links -arKLz "/home/fen-arch/ssh_dots/" "schaack@ford.ibest.uidaho.edu:fmacrae/dotfiles"
 REMOTE="schaack@${1}.ibest.uidaho.edu"
 ssh -Xt "$REMOTE" "ZDOTDIR=/mnt/lfs2/schaack/fmacrae/dotfiles /mnt/lfs2/schaack/.linuxbrew/bin/zsh --no-globalrcs"
