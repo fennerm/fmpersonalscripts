@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-## Call pipreqs before pushing. All args are passed to git push.
-
