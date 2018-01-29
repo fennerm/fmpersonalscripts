@@ -2,9 +2,10 @@ from warnings import filterwarnings
 
 from pytest import fixture
 
-from fmpersonalscripts.symlink_dotfiles import symlink_all_dotfiles
+from bin.symlink_dotfiles import symlink_all_dotfiles
 
 filterwarnings("ignore")
+
 
 @fixture(name="mock_home")
 def gen_mock_home(sandbox):
@@ -49,22 +50,28 @@ def gen_mock_dots(sandbox):
     yield mock_dots
     mock_dots['dots'].delete()
 
+
 @fixture(name="resultant_dirs")
 def gen_resultant_dirs(mock_home, mock_dots):
     symlink_all_dotfiles(
         dots=mock_dots['dots'], home=mock_home['home'])
 
+
 def test_conflicts_not_overwritten(resultant_dirs, mock_home, mock_dots):
     assert mock_home['config_file'].read() == 'foo'
+
 
 def test_no_conflicts_linked(resultant_dirs, mock_home, mock_dots):
     assert (mock_home['home'] / '.another_file').exists()
 
+
 def test_config_dir_not_linked(resultant_dirs, mock_home, mock_dots):
     assert not mock_home['xdg_home'].is_symlink()
 
+
 def test_contained_file_linked(resultant_dirs, mock_home, mock_dots):
     assert (mock_home['home'] / 'dir2' / 'con_file').exists()
+
 
 def test_two_dots(resultant_dirs, mock_home, mock_dots):
     assert (mock_home['home'] / '.foo.bar').exists()

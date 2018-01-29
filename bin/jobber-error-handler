@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+LOGS="/home/data/logs/jobber"
+mkdir "$LOGS"
+cat "$@" > "$LOGS/jobber.log"
