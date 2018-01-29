@@ -2,13 +2,3 @@
 
 ## Call pipreqs before pushing. All args are passed to git push.
 
-pipreqs "--force" "$PWD"
-
-if [ "$?" != 0 ]; then
-	echo "ERROR: pipreqs failed"
-	exit 1
-fi
-
-git add 'requirements.txt'
-git commit '--amend' '--no-edit'
-git push "$@"

@@ -26,9 +26,10 @@ def _template():
 
 def add_hooks():
     """Add git hooks to the repo"""
-    pre_push_hook = PACKAGE_ROOT / 'bin' / 'pre-push'
+    hooks = [PACKAGE_ROOT / 'bin' / x for x in ['pre-push', 'pre-commit']]
     destination = local.path('.git/hooks')
-    pre_push_hook.copy(destination)
+    for hook in hooks:
+        hook.copy(destination)
 
 
 def add_license():
