@@ -4,15 +4,16 @@ from mpd import MPDClient
 from plumbum import local
 import taglib as tl
 
-ADDRESS="localhost"
-LIBRARY="~/data/music"
-PORT=6600
+ADDRESS = "localhost"
+LIBRARY = "~/data/music"
+PORT = 6600
 
-def get_cover(song_path):
-    try:
-        extract_embedded(song_path)
-    tags =
-    song_dir = song_path.parent
+# def get_cover(song_path):
+#    try:
+#        extract_embedded(song_path)
+#    tags =
+#    song_dir = song_path.parent
+
 
 def main():
     mpd = MPDClient()
