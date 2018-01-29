@@ -8,29 +8,50 @@ Arguments:
   NAME      Name of the python package
 """
 from __future__ import print_function
-from contextlib import redirect_stdout
+from datetime import datetime
 
 from docopt import docopt
 from plumbum import local
 from plumbum.cmd import git
 
 
+PACKAGE_ROOT = local.path(__file__).dirname.dirname
+
+
 def _template():
     """Get the path to the setup.py template"""
-    this_file = local.path(__file__)
-    script_dir = this_file.dirname
-    module_name = this_file.with_suffix('').name
-    template = script_dir / 'resources' / module_name / 'template.py'
+    template = PACKAGE_ROOT / 'fmpersonalscripts' / 'setup_template.py'
     return template
 
 
+def add_hooks():
+    """Add git hooks to the repo"""
+    pre_push_hook = PACKAGE_ROOT / 'bin' / 'pre-push'
+    destination = local.path('.git/hooks')
+    pre_push_hook.copy(destination)
+
+
+def add_license():
+    """Add MIT license to the project"""
+    license_template_filename = PACKAGE_ROOT / 'docs' / 'MIT_LICENSE_STUB'
+    with license_template_filename.open('r') as f:
+        license_body = f.read()
+    license_filename = local.path('LICENSE')
+    current_year = datetime.now().year
+    with license_filename.open('w') as f:
+        f.write(' '.join(['Copyright', str(current_year), 'Fenner Macrae']))
+        f.write('\n\n')
+        f.write(license_body)
+
+
 def gen_dir_skeleton(name):
-    dirs = [name, 'test']
+    dirs = [name.name, 'test']
     for d in dirs:
-        d.mkdir()
+        local.path(d).mkdir()
+    local.path('README.md').touch()
 
 
-def gen_setup(name, template = _template()):
+def gen_setup(name, template=_template()):
     """Generate a setup.py file
 
     Parameters
@@ -52,13 +73,13 @@ def gen_setup(name, template = _template()):
 
     with template.open('r') as inp:
         with output_path.open('w') as out:
-            with redirect_stdout(out):
-                for line in inp:
-                    first_word = line.partition(' ')[0]
-                    if first_word == 'NAME':
-                        print(''.join(["NAME = '", name, "'"]))
-                    else:
-                        print(line.rstrip())
+            for line in inp:
+                first_word = line.partition(' ')[0]
+                if first_word == 'NAME':
+                    print(''.join(["NAME = '", name, "'"]), file=out)
+                else:
+                    print(line.rstrip(), file=out)
+
 
 def gen_gitignore():
     """Generate a .gitignore file if one doesn't already exist"""
@@ -69,9 +90,12 @@ def main(name):
     name.mkdir()
     with local.cwd(name):
         gen_dir_skeleton(name)
-        gen_setup(name)
-        git['init']
+        gen_setup(name.name)
+        git['init']()
         gen_gitignore()
+        add_hooks()
+        add_license()
+
 
 if __name__ == '__main__':
     args = docopt(__doc__)

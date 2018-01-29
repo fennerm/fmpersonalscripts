@@ -1,11 +1,13 @@
-from fmpersonalscripts.save_i3_layout import reformat_json
+from bin.save_i3_layout import reformat_json
 import json
 from plumbum import local
 from pytest import fixture
 
+
 @fixture(name="layout")
 def gen_layout(testdir):
     return testdir / "resources" / "example_layout.json"
+
 
 def test_save_i3_layout(layout, randstr, sandbox):
     name = randstr()
