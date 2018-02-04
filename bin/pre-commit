@@ -15,7 +15,7 @@ from plumbum.cmd import (
 
 def run_pipreqs():
     """Generate a requirements.txt file with pipreqs"""
-    pipreqs["--force", "--clean", local.cwd] & FG
+    pipreqs["--force", local.cwd] & FG
 
 
 def decrease_version_strictness():
@@ -23,15 +23,19 @@ def decrease_version_strictness():
     requirements_file = local.path('requirements.txt')
 
     with requirements_file.open('r') as f:
-        requirements = f.read()
+        requirements = f.read().split("\n")
 
     new_requirements = []
     for requirement in requirements:
-        name = requirement.split("==")[0]
-        version = requirement.split("==")[1]
-        next_major_version = str(int(version[0]) + 1) + ".0.0"
-        new_requirements.append(''.join([name, ">=", version, ",<",
-                                         next_major_version]))
+        if requirement:
+            name = requirement.split("==")[0]
+            version = requirement.split("==")[1]
+            if version != 'info':
+                next_major_version = str(int(version[0]) + 1) + ".0.0"
+                new_requirements.append(''.join([name, ">=", version, ",<",
+                                                 next_major_version]))
+
+    new_requirements = '\n'.join(new_requirements)
 
     with requirements_file.open('w') as f:
         f.writelines(new_requirements)
