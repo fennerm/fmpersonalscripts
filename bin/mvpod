@@ -1,20 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
+from plumbum import local
 
-# Mount the mp3 player if necessary
-MOUNTPOINT="/run/media/fen-arch/EC95-4FBB"
-DIR="$MOUNTPOINT/PODCASTS"
-mkdir "$DIR"
+local_podcast_dir = local.path("/home/data/podcasts")
+mounted_podcast_dir = local.path("/run/media/fen-arch/EC95-4FBB/PODCASTS")
+if not mounted_podcast_dir.exists():
+    mounted_podcast_dir.mkdir()
 
-# Move the episodes
-for f in "/home/data/podcasts/*"
-do
-    if [[ -d "$f" ]]; then
-        if eval cp -v "${f}/*" "$DIR"; then
-            rm "$f/*"
-        fi
-    else
-        if eval cp -vr "$f" "$DIR"; then
-            rm "$f"
-        fi
-    fi
-done
+for f in local_podcast_dir.glob("*/*.mp3"):
+    print("Moving " + f.name)
+    f.move(mounted_podcast_dir)
+print("Done :)")
