@@ -15,7 +15,7 @@ from plumbum.cmd import (
 
 def run_pipreqs():
     """Generate a requirements.txt file with pipreqs"""
-    pipreqs["--force", local.cwd] & FG
+    pipreqs["--force", "--ignore", "test", local.cwd] & FG
 
 
 def decrease_version_strictness():
