@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+nvim -p \
+    ~/fmacrae/daphnia-mtdna-ma.private/daphnia-mtdna-ma/lab_notebook.txt \
+    ~/fmacrae/megadaph.private/megadaph/lab_notebook.txt

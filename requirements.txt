@@ -1,7 +1,7 @@
-docopt>=0.6.2,<1.0.0
-plumbum>=1.6.4,<2.0.0
-pytest>=3.3.1,<4.0.0
 python_mpd2>=0.5.5,<1.0.0
-setuptools>=28.8.0,<3.0.0
 i3_py>=0.6.4,<1.0.0
+plumbum>=1.6.4,<2.0.0
+docopt>=0.6.2,<1.0.0
+setuptools>=28.8.0,<3.0.0
+pytest>=3.3.1,<4.0.0
 pypandoc>=1.4,<2.0.0
