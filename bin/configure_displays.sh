@@ -16,7 +16,8 @@ projector_connected="$(xrandr | grep "800x840")"
 
 if [ "$monitor3" ]; then
     xrandr --output "$monitor1" --off \
-        --output "$monitor2" --auto --output "$monitor3" --auto
+        --output "$monitor2" --auto \
+        --output "$monitor3" --auto --right-of "$monitor2"
 elif [ "$projector_connected" ]; then
     xrandr --output "$monitor2" --mode 800x840
 else
