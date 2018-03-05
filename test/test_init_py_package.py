@@ -1,5 +1,5 @@
 from plumbum import local
-from fmbiopy.fmtest import assert_script_produces_files
+from test.helpers import assert_script_produces_files
 
 
 def test_init_py_package_produces_expected_output(tmpdir):
