@@ -1,3 +1,8 @@
+from plumbum import local
+
+from fmbiopy.fmpaths import is_empty
+
+
 def assert_script_produces_files(script, args, output, redirect=None,
                                  empty_ok=False, outdir=None):
     """Assert that a script with given command line args produces expected files
@@ -5,17 +10,17 @@ def assert_script_produces_files(script, args, output, redirect=None,
     Parameters
     ----------
     script : str
-    Path to the script
+        Path to the script
     args : List[str]
-    List of command line arguments
+        List of command line arguments
     output: List[str] or List[plumbum.LocalPath]
-    List of output files
+        List of output files
     redirect: str or plumbum.LocalPath, optional
-    If defined, redirect the stdout of the script to the given file.
+        If defined, redirect the stdout of the script to the given file.
     empty_ok : bool
-    If True, output files are valid even if they are empty
+        If True, output files are valid even if they are empty
     outdir: str or plumbum.LocalPath, optional
-    If given, the output filenames are relative to this directory
+        If given, the output filenames are relative to this directory
     """
     execute = local[script]
     command = execute.__getitem__(args)
