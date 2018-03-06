@@ -31,7 +31,9 @@ def decrease_version_strictness():
             name = requirement.split("==")[0]
             version = requirement.split("==")[1]
             if version != 'info':
-                next_major_version = str(int(version[0]) + 1) + ".0.0"
+                major_version = int(version.split('.')[0])
+
+                next_major_version = str(major_version + 1) + ".0.0"
                 new_requirements.append(''.join([name, ">=", version, ",<",
                                                  next_major_version]))
 
