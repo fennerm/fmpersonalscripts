@@ -24,8 +24,12 @@ external2="$(get_connection "DP-2")"
 display="$( echo "$SRANDRD_ACTION" | awk '{print $1;}' )"
 
 if [[ "$SRANDRD_ACTION" =~ .*disconnected.* ]]; then
-    xrandr --output "$display" --off \
-        --output "$internal_monitor" --dpi "$dpi" --scale "$scale"
+    if [[ "$SRANDRD_EDID" == "$external_monitors_id" ]]; then
+        if [ ! "$external1" ] && [ ! "$external2" ]; then
+            xrandr --output "$display" --off \
+                --output "$internal_monitor" --dpi "$dpi" --scale "$scale"
+        fi
+    fi
 elif [[ "$SRANDRD_EDID" == "$projector_id" ]]; then
     xrandr --output "$display" --mode 800x600
 elif [[ "$SRANDRD_EDID" == "$external_monitors_id" ]]; then
