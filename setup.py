@@ -1,5 +1,4 @@
 """Setup script"""
-from glob import glob
 import os
 from setuptools import (
     find_packages,
@@ -42,7 +41,7 @@ def url(name=NAME, username=USERNAME):
 
 def list_scripts():
     """Get the names of the scripts in the bin directory"""
-    scripts = glob("bin/*")
+    scripts = os.listdir('bin')
     scripts = [f for f in scripts if os.path.isfile(f)]
     scripts = [f for f in scripts if '__init__' not in f]
     scripts = [f for f in scripts if not f.endswith('.pyc')]
