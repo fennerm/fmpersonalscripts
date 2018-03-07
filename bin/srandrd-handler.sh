@@ -2,6 +2,7 @@
 ## Configure automatic xrandr configuration for dual monitors + projector
 
 set -x
+
 # Parameters for primary display
 dpi="92"
 scale="0.45x0.45"
@@ -17,18 +18,39 @@ get_connection() {
     echo "$connection"
 }
 
-internal_monitor="$(get_connection "eDP-1")"
+disconnect_projector() {
+    xrandr --output "HDMI-1" --off
+}
+
+connect_projector() {
+    xrandr --output "HDMI-1" --mode 800x600
+}
+
+disconnect_monitors() {
+    xrandr --output "eDP"
+}
+
+externals_disconnected() {
+
+
+}
+
+internal="eDP-1"
+external1="HDMI-1"
+external2="DP-2"
+internal="$(get_connection "eDP-1")"
 external1="$(get_connection "HDMI-1")"
 external2="$(get_connection "DP-2")"
 
 display="$( echo "$SRANDRD_ACTION" | awk '{print $1;}' )"
 
-if [[ "$SRANDRD_ACTION" =~ .*disconnected.* ]]; then
+if [[ "$SRANDRD_ACTION" =~ "disconnected" ]]; then
     if [[ "$SRANDRD_EDID" == "$external_monitors_id" ]]; then
-        if [ ! "$external1" ] && [ ! "$external2" ]; then
+        if [ ! "$(get_connection $external1)" ] && [ ! "$external2" ]; then
             xrandr --output "$display" --off \
                 --output "$internal_monitor" --dpi "$dpi" --scale "$scale"
         fi
+    elif [[ "$SRANDRD_EDID"]]
     fi
 elif [[ "$SRANDRD_EDID" == "$projector_id" ]]; then
     xrandr --output "$display" --mode 800x600
