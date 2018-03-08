@@ -4,6 +4,7 @@ import logging
 from logging import info
 import os
 import sys
+from time import sleep
 
 from plumbum import (
     BG,
@@ -46,10 +47,10 @@ PROJECTOR = {
 }
 
 
-def is_connected(device):
+def is_connected(output_connection):
     '''Test whether a given display output is connected'''
     try:
-        (xrandr | rg['-i', device['output'] + ' connected'])()
+        (xrandr | rg['-i', output_connection + ' connected'])()
         return True
     except ProcessExecutionError:
         return False
@@ -67,48 +68,77 @@ def projector_connected():
     return SRANDRD_EDID in PROJECTOR['edid']
 
 
+def is_enabled(output_connection):
+    '''Return True if the device is connected and displaying'''
+    try:
+        (xrandr | rg['-i', output_connection + r'.*mm x .*'])()
+        return True
+    except ProcessExecutionError:
+        return False
+
+
 def enable(device):
-    xrandr_args = ['--output', device['output']] + device['flags']
-    xrandr.__getitem__(xrandr_args)()
+    if not is_enabled(device['output']):
+        xrandr_args = ['--output', device['output']] + device['flags']
+        xrandr.__getitem__(xrandr_args)()
 
 
 def disable(device):
-    xrandr('--output', device['output'], '--off')
+    if is_enabled(device['output']):
+        xrandr('--output', device['output'], '--off')
 
 
-def main():
-    if display_was_disconnected():
-        if (not is_connected(EXTERNAL_MONITOR1) and
-                not is_connected(EXTERNAL_MONITOR2)):
-            info('All external display(s) disconnected, disabling...')
-            disable(EXTERNAL_MONITOR1)
-            disable(EXTERNAL_MONITOR2)
-            enable(INTERNAL)
-            info('External display(s) successfully disabled...')
+def connection_changed():
+    output_connection = SRANDRD_ACTION.split(' ')[0]
+    connection_event = SRANDRD_ACTION.split(' ')[1] == "connected"
+    return connection_event != is_enabled(output_connection)
+
+
+def handle_disconnection():
+    if (not is_connected(EXTERNAL_MONITOR1['output']) and
+            not is_connected(EXTERNAL_MONITOR2['output'])):
+        info('All external display(s) disconnected, disabling...')
+        enable(INTERNAL)
+        sleep(5)
+        disable(EXTERNAL_MONITOR1)
+        disable(EXTERNAL_MONITOR2)
+        info('External display(s) successfully disabled...')
+    else:
+        info('External display disconnected, but not disabling yet because '
+             'other external display is still connected')
+        info('-> SRANDRD_ACTION = %s', SRANDRD_ACTION)
+
+
+def handle_new_connection():
+    if external_monitor_connected():
+        if (is_connected(EXTERNAL_MONITOR1['output']) and
+                is_connected(EXTERNAL_MONITOR2['output'])):
+            info('Both external monitors connected, enabling them...')
+            enable(EXTERNAL_MONITOR1)
+            enable(EXTERNAL_MONITOR2)
+            sleep(10)
+            disable(INTERNAL)
+            info('Successfully enabled external monitors')
             info('Relaunching polybar...')
             LAUNCH_POLYBAR & BG
         else:
-            info('External display disconnected, but not disabling yet because '
-                 'other external display is still connected')
-            info('-> SRANDRD_ACTION = %s', SRANDRD_ACTION)
-
+            info('New display detected, waiting for extra displays...')
+    elif projector_connected():
+        info('Projector connected, enabling...')
+        enable(PROJECTOR)
+        info('Projector successfully enabled')
     else:
-        if external_monitor_connected():
-            if (is_connected(EXTERNAL_MONITOR1) and
-                    is_connected(EXTERNAL_MONITOR2)):
-                info('Both external monitors connected, enabling them...')
-                enable(EXTERNAL_MONITOR1)
-                enable(EXTERNAL_MONITOR2)
-                disable(INTERNAL)
-                info('Successfully enabled external monitors')
-                info('Relaunching polybar...')
-                LAUNCH_POLYBAR & BG
-            else:
-                info('New display detected, waiting for extra displays...')
-        elif projector_connected():
-            info('Projector connected, enabling...')
-            enable(PROJECTOR)
-            info('Projector successfully enabled')
+        info('Unrecognized display connected, shutting down...')
+        sys.exit(1)
+
+
+def main():
+    if connection_changed():
+        if display_was_disconnected():
+            handle_disconnection()
+        else:
+            handle_new_connection()
+    sys.exit()
 
 
 if __name__ == '__main__':
