@@ -23,6 +23,12 @@ NAME = ''
 # Helpers
 # =============================================================================
 
+def parse_requirements():
+    """Parse the list of requirements from requirements.txt."""
+    with open('requirements.txt') as f:
+        requirements = f.read().splitlines()
+    return requirements
+
 
 def long_description(readme=README):
     """Extract the long description from the README"""
@@ -49,14 +55,18 @@ def list_scripts():
     return scripts
 
 
-setup(name=NAME,
-      version='0.0.1',
-      description=long_description()[0],
-      long_description=long_description(),
-      url=url(),
-      author='Fenner Macrae',
-      author_email='fmacrae.dev@gmail.com',
-      license='MIT',
-      packages=find_packages(exclude=["*test*"]),
-      scripts=list_scripts()
-    )
+setup(
+    name=NAME,
+    version='0.0.1',
+    description=long_description()[0],
+    long_description=long_description(),
+    url=url(),
+    author='Fenner Macrae',
+    author_email='fmacrae.dev@gmail.com',
+    license='MIT',
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
+    install_requires=parse_requirements(),
+    packages=find_packages(exclude=["*test*"]),
+    scripts=list_scripts(),
+)
