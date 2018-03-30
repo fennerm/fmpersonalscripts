@@ -21,8 +21,6 @@ logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO'))
 SRANDRD_ACTION = os.environ['SRANDRD_ACTION']
 SRANDRD_EDID = os.environ['SRANDRD_EDID']
 
-LAUNCH_POLYBAR = local['~/dotfiles/polybar/.config/polybar/launch.sh']
-
 INTERNAL = {
     'output': 'eDP-1',
     'flags': ['--dpi', '192', '--mode', '1920x1080']
@@ -87,6 +85,10 @@ def disable(device):
     if is_enabled(device['output']):
         xrandr('--output', device['output'], '--off')
 
+def launch_polybar():
+    polybar = local['~/dotfiles/polybar/.config/polybar/launch.sh']
+    polybar & BG
+
 
 def connection_changed():
     output_connection = SRANDRD_ACTION.split(' ')[0]
@@ -102,6 +104,7 @@ def handle_disconnection():
         sleep(5)
         disable(EXTERNAL_MONITOR1)
         disable(EXTERNAL_MONITOR2)
+        launch_polybar()
         info('External display(s) successfully disabled...')
     else:
         info('External display disconnected, but not disabling yet because '
@@ -120,7 +123,7 @@ def handle_new_connection():
             disable(INTERNAL)
             info('Successfully enabled external monitors')
             info('Relaunching polybar...')
-            LAUNCH_POLYBAR & BG
+            launch_polybar()
         else:
             info('New display detected, waiting for extra displays...')
     elif projector_connected():
