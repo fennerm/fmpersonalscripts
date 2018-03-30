@@ -23,12 +23,6 @@ NAME = ''
 # Helpers
 # =============================================================================
 
-def parse_requirements():
-    """Parse the list of requirements from requirements.txt."""
-    with open('requirements.txt') as f:
-        requirements = f.read().splitlines()
-    return requirements
-
 
 def long_description(readme=README):
     """Extract the long description from the README"""
@@ -66,7 +60,6 @@ setup(
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    install_requires=parse_requirements(),
     packages=find_packages(exclude=["*test*"]),
     scripts=list_scripts(),
 )
