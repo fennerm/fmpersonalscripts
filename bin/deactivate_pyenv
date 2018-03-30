@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-PATH="$(echo $PATH | python -c 'import sys, re; print(":".join(x for x in sys.stdin.read().strip().split(":") if not "pyenv" in x))')"
-export PATH
