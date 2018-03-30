@@ -15,7 +15,7 @@ from plumbum.cmd import (
 
 def run_pipreqs():
     """Generate requirements.txt files with pipreqs."""
-    pipreqs['--force', '--savepath', 'dev-requirements.txt'] & FG
+    pipreqs['--force', '--savepath', 'dev-requirements.txt', local.cwd] & FG
     pipreqs['--force', '--ignore', 'test', local.cwd] & FG
 
 
