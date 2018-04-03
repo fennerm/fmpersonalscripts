@@ -22,24 +22,24 @@ SRANDRD_ACTION = os.environ['SRANDRD_ACTION']
 SRANDRD_EDID = os.environ['SRANDRD_EDID']
 
 INTERNAL = {
-    'output': 'eDP-1',
+    'output': 'eDP-1-1',
     'flags': ['--dpi', '192', '--mode', '1920x1080']
 }
 
 EXTERNAL_MONITOR1 = {
-    'output': 'HDMI-1',
+    'output': 'HDMI-1-1',
     'edid': 'F022318301010101',
     'flags': ['--auto']
 }
 
 EXTERNAL_MONITOR2 = {
-    'output': 'DP-2',
+    'output': 'DP-1-2',
     'edid': 'F022318301010101',
     'flags': ['--right-of', EXTERNAL_MONITOR1['output'], '--auto']
 }
 
 PROJECTOR = {
-    'output': 'HDMI-1',
+    'output': 'HDMI-1-1',
     'edid': '7436003000000001',
     'flags': ['--mode', '800x600']
 }
