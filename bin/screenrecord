@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+## Record screen as a gif
+
+# Script is structured as an on-off switch which is given a key-binding.
+# On the first activation, the script starts recording the screen. On the second
+# activation, the recording is terminated and the output gif is produced.
+# Notifications are used to update on progress.
+if pgrep ffmpeg; then
+    killall ffmpeg
+else
+    timestamp="$(date -d "today" +"%Y%m%d%H%M")"
+    tmpdir="/tmp/screenrecord/${timestamp}"
+    mkdir -p "$tmpdir"
+    outdir="$HOME/data/videos/screen_recordings"
+
+    # Record entire screen. Limit recording to a max of 60s
+    ffmpeg -f x11grab -s "$(screendim)" -t 60 -r 25 -i :0.0 \
+        "${tmpdir}/out.mp4"
+
+    notify-send "Recording complete, converting to gif..."
+    # Convert to series of jpg
+    ffmpeg -i "${tmpdir}/out.mp4" -vf fps=25 "${tmpdir}"/frame%03d.png
+
+    # Convert jpgs to gifs
+    convert -delay 3 -loop 0 -dither None \
+        -colors 80 "${tmpdir}/frame*.png" \
+        -fuzz "10%" -layers OptimizeFrame \
+        "${outdir}/screencap_${timestamp}.gif"
+
+    notify-send "Gif produced, shutting down..."
+    # Cleanup
+    rm -rf "$tmpdir"
+fi
