@@ -26,7 +26,7 @@ def _template():
 
 def add_hooks():
     """Add git hooks to the repo."""
-    hooks = [PACKAGE_ROOT / 'bin' / x for x in ['pre-push', 'pre-commit']]
+    hooks = [PACKAGE_ROOT / 'bin' / x for x in ['pre-push']]
     destination = local.path('.git/hooks')
     for hook in hooks:
         hook.symlink(destination / hook.name)

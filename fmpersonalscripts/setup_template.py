@@ -6,12 +6,12 @@ from setuptools import (
 )
 
 setup(
-    name=,
+    name="",
     version='0.1.0',
-    description=,
+    description="",
     long_description=open('README.md', 'r', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
-    url=,
+    url="",
     author='Fenner Macrae',
     author_email='fmacrae.dev@gmail.com',
     license='MIT',
