@@ -10,6 +10,6 @@ def test_init_py_package_produces_expected_output(tmpdir):
         assert_script_produces_files(
             script=script, args=[name],
             output=["setup.py", ".git", ".git/hooks/pre-push",
-                    ".git/hooks/pre-commit", name, "test", "LICENSE",
+                    name, "test", "LICENSE",
                     "README.md", '.gitignore'],
             outdir=outdir, empty_ok=True)
