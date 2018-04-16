@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""'Generate a setup.py file
+"""Initialize an empty python package.
 
 Usage:
   gen_setup.py NAME
@@ -19,21 +19,21 @@ PACKAGE_ROOT = local.path(__file__).dirname.dirname
 
 
 def _template():
-    """Get the path to the setup.py template"""
+    """Get the path to the setup.py template."""
     template = PACKAGE_ROOT / 'fmpersonalscripts' / 'setup_template.py'
     return template
 
 
 def add_hooks():
-    """Add git hooks to the repo"""
+    """Add git hooks to the repo."""
     hooks = [PACKAGE_ROOT / 'bin' / x for x in ['pre-push', 'pre-commit']]
     destination = local.path('.git/hooks')
     for hook in hooks:
-        hook.copy(destination)
+        hook.symlink(destination / hook.name)
 
 
 def add_license():
-    """Add MIT license to the project"""
+    """Add MIT license to the project."""
     license_template_filename = PACKAGE_ROOT / 'docs' / 'MIT_LICENSE_STUB'
     with license_template_filename.open('r') as f:
         license_body = f.read()
@@ -46,6 +46,7 @@ def add_license():
 
 
 def gen_dir_skeleton(name):
+    """Create the package directory structure."""
     dirs = [name.name, 'test']
     for d in dirs:
         local.path(d).mkdir()
@@ -53,7 +54,7 @@ def gen_dir_skeleton(name):
 
 
 def gen_setup(name, template=_template()):
-    """Generate a setup.py file
+    """Generate a setup.py file.
 
     Parameters
     ----------
@@ -64,13 +65,14 @@ def gen_setup(name, template=_template()):
 
     Raises
     ------
-    FileExistsError
+    OSError
         If setup.py already exists
+
     """
     output_path = local.path('setup.py')
 
     if output_path.exists():
-        raise FileExistsError
+        raise OSError('setup.py file already exists')
 
     with template.open('r') as inp:
         with output_path.open('w') as out:
@@ -83,11 +85,12 @@ def gen_setup(name, template=_template()):
 
 
 def gen_gitignore():
-    """Generate a .gitignore file if one doesn't already exist"""
+    """Generate a .gitignore file if one doesn't already exist."""
     local['gen_py_gitignore.sh']()
 
 
 def main(name):
+    """Initialize an empty python package."""
     name.mkdir()
     with local.cwd(name):
         gen_dir_skeleton(name)

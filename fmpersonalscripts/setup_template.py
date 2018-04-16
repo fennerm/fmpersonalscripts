@@ -1,65 +1,21 @@
-"""Setup script"""
-from glob import glob
+from io import open
 import os
 from setuptools import (
-        find_packages,
-        setup,
-        )
-
-# =============================================================================
-# Globals
-# =============================================================================
-"""Location of the README file"""
-README = 'README.md'
-
-"""Github username"""
-USERNAME = 'fennerm'
-
-"""Package name"""
-NAME = ''
-
-
-# =============================================================================
-# Helpers
-# =============================================================================
-
-
-def long_description(readme=README):
-    """Extract the long description from the README"""
-    try:
-        from pypandoc import convert
-        long_description = convert(str(readme), 'md', 'rst')
-    except (ImportError, IOError, OSError):
-        with open(readme, 'r') as f:
-            long_description = f.read()
-    return long_description
-
-
-def url(name=NAME, username=USERNAME):
-    """Generate the package url from the package name"""
-    return '/'.join(['http://github.com', username, name])
-
-
-def list_scripts():
-    """Get the names of the scripts in the bin directory"""
-    scripts = glob("bin/*")
-    scripts = [f for f in scripts if os.path.isfile(f)]
-    scripts = [f for f in scripts if '__init__' not in f]
-    scripts = [f for f in scripts if not f.endswith('.pyc')]
-    return scripts
-
+    find_packages,
+    setup,
+)
 
 setup(
-    name=NAME,
-    version='0.0.1',
-    description=long_description()[0],
-    long_description=long_description(),
-    url=url(),
+    name=,
+    version='0.1.0',
+    description=,
+    long_description=open('README.md', 'r', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
+    url=,
     author='Fenner Macrae',
     author_email='fmacrae.dev@gmail.com',
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     packages=find_packages(exclude=["*test*"]),
-    scripts=list_scripts(),
 )
