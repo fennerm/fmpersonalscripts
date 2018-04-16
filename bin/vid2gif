@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+timestamp="$(date -d "today" +"%Y%m%d%H%M")"
+tmpdir="/tmp/vid2gif_${timestamp}"
+outgif="$(basename "$1").gif"
+ffmpeg -i "$1" "${tmpdir}/frame%04d.png"
+gifski -o "$outgif" "${tmpdir}*"
+rm -rf tmpdir
