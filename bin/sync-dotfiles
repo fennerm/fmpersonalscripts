@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Sync dotfiles to the IBEST server
 rsync --copy-unsafe-links -arKLz "/home/fen-arch/ssh_dots/" \
-    "schaack@ford.ibest.uidaho.edu:fmacrae/dotfiles"
+    "schaack@whale.ibest.uidaho.edu:fmacrae/dotfiles"
