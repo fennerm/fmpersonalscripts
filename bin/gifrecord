@@ -9,6 +9,7 @@ if pgrep ffmpeg; then
     killall ffmpeg
 else
     timestamp="$(date -d "today" +"%Y%m%d%H%M")"
+    icon="/usr/share/icons/Arc/devices/camera.png"
     tmpdir="/tmp/screenrecord/${timestamp}"
     mkdir -p "$tmpdir"
     outdir="$HOME/data/videos/screen_recordings"
@@ -17,17 +18,14 @@ else
     ffmpeg -f x11grab -s "$(screendim)" -t 60 -r 25 -i :0.0 \
         "${tmpdir}/out.mp4"
 
-    notify-send "Recording complete, converting to gif..."
-    # Convert to series of jpg
+    notify-send "Recording complete, converting to gif..." -i "$icon"
+    # Convert to series of png
     ffmpeg -i "${tmpdir}/out.mp4" -vf fps=25 "${tmpdir}"/frame%03d.png
 
-    # Convert jpgs to gifs
-    convert -delay 3 -loop 0 -dither None \
-        -colors 80 "${tmpdir}/frame*.png" \
-        -fuzz "10%" -layers OptimizeFrame \
-        "${outdir}/screencap_${timestamp}.gif"
+    # Convert to gif
+    gifski -o "${outdir}/screencap_${timestamp}.gif" "$tmpdir"/frame*.png
 
-    notify-send "Gif produced, shutting down..."
+    notify-send "Gif produced, shutting down..." -i "$icon"
     # Cleanup
     rm -rf "$tmpdir"
 fi

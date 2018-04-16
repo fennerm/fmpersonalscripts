@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+## Record screen as an mp4
+
+# Script is structured as an on-off switch which is given a key-binding.
+# On the first activation, the script starts recording the screen. On the second
+# activation, the recording is terminated and the output gif is produced.
+# Notifications are used to update on progress.
+if pgrep ffmpeg; then
+    killall ffmpeg
+else
+    timestamp="$(date -d "today" +"%Y%m%d%H%M")"
+    outdir="$HOME/data/videos/screen_recordings"
+    icon="/usr/share/icons/Arc/devices/camera.png"
+
+    # Record entire screen. Limit recording to a max of 60s
+    ffmpeg -f x11grab -s "$(screendim)" -t 60 -r 25 -i :0.0 \
+        "${outdir}/screencap_${timestamp}.mp4"
+
+    notify-send "Recording complete!" -i "$icon"
+fi

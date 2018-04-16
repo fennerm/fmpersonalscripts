@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-## Print the screen dimensions
-xdpyinfo \
-    | grep -i dimensions: \
-    | sed 's/[^0-9]*pixels.*(.*).*//' \
-    | sed 's/[^0-9x]*//'
