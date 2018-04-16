@@ -22,26 +22,28 @@ SRANDRD_ACTION = os.environ['SRANDRD_ACTION']
 SRANDRD_EDID = os.environ['SRANDRD_EDID']
 
 INTERNAL = {
-    'output': 'eDP-1-1',
+    'output': 'eDP-1',
     'flags': ['--dpi', '192', '--mode', '1920x1080']
 }
 
 EXTERNAL_MONITOR1 = {
-    'output': 'HDMI-1-1',
+    'output': 'HDMI-1',
     'edid': 'F022318301010101',
-    'flags': ['--auto']
+    'flags': ['--auto', '--set', 'Broadcast RGB', 'Full']
 }
 
 EXTERNAL_MONITOR2 = {
-    'output': 'DP-1-2',
+    'output': 'DP-2',
     'edid': 'F022318301010101',
-    'flags': ['--right-of', EXTERNAL_MONITOR1['output'], '--auto']
+    'flags': ['--right-of', EXTERNAL_MONITOR1['output'],
+              '--auto',
+              '--set', 'Broadcast RGB', 'Full']
 }
 
 PROJECTOR = {
-    'output': 'HDMI-1-1',
+    'output': 'HDMI-1',
     'edid': '7436003000000001',
-    'flags': ['--mode', '800x600']
+    'flags': ['--mode', '800x600', '--set', 'Broadcast RGB', 'Full']
 }
 
 
@@ -84,6 +86,7 @@ def enable(device):
 def disable(device):
     if is_enabled(device['output']):
         xrandr('--output', device['output'], '--off')
+
 
 def launch_polybar():
     polybar = local['~/dotfiles/polybar/.config/polybar/launch.sh']
