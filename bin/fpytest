@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+## Pytest preset for testing code with both python2 and 3
+pytest_args="-m pytest --failed-first --verbose -x --pdb --cov-report
+    --term-missing --full-trace --color yes --showlocals --cov $PWD
+    --cov-config $HOME/.coveragerc"
+python3 "$pytest_args"
+python2 "$pytest_args"
