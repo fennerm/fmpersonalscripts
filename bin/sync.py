@@ -28,8 +28,6 @@ Options:
   --exclude=FILES       List of comma separated files to ignore
                         [default:".git"]
 """
-import os
-
 from docopt import docopt
 from plumbum import (
     FG,
@@ -39,7 +37,7 @@ from plumbum.cmd import rsync
 
 
 def local_to_remote(local_file, local_root, remote_root):
-    """Convert a local path to its matched path on the remote machine"""
+    """Convert a local path to its matched path on the remote machine."""
     relative_local_file = local_file.relative_to(local_root)
     remote_local_file = remote_root / relative_local_file
     return remote_local_file
