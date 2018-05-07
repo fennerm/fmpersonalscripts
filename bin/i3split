@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+## Script which automatically splits windows in my preferred layout.
+## If the current window's width fills the whole screen, then create a new
+## horizontal split at the root container. Otherwise split vertically.
+
+function get_window_width() {
+    active_window="$(xdotool getactivewindow)"
+    xwininfo -id "$active_window" |
+        grep Width |
+        sed 's/Width:\s//'
+}
+
+function get_window_height() {
+    active_window="$(xdotool getactivewindow)"
+    xwininfo -id "$active_window" |
+        grep Height |
+        sed 's/Height:\s//'
+}
+
+function focus_on_root() {
+    i3-msg focus parent focus parent focus parent focus parent focus parent
+}
+
+function get_screen_width() {
+    xdpyinfo | grep dimensions | awk '{print $2}' | awk -F "x" '{print $1}'
+}
+
+function get_screen_height() {
+    xdpyinfo | grep dimensions | awk '{print $2}' | awk -F "x" '{print $2}'
+}
+
+two_thirds_width="$(($(get_screen_width)*2/3))"
+if [ "$(get_window_width)" -gt "$two_thirds_width" ]; then
+    focus_on_root
+    i3-msg split horizontal
+else
+    two_thirds_height="$(($(get_screen_height)*2/3))"
+    window_height="$(get_window_height)"
+    if [ "$window_height" -gt "$two_thirds_height" ]; then
+        i3-msg split vertical
+    fi
+fi
+
+i3-msg exec "$1"
