@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+## Get the current window opacity as a decimal
+active_window="$(xdotool getactivewindow)"
+opacity_hex="$(xprop -id "$active_window" |
+    grep "_NET_WM_WINDOW_OPACITY(CARDINAL)" |
+    awk '{print $3}')"
+echo "scale=2; $opacity_hex/4294967295" | bc
