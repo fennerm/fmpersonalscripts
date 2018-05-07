@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''Automatically configure xrandr for dual monitors + projector with srandrd'''
+"""Automatically configure xrandr for dual monitors + projector with srandrd."""
 import logging
 from logging import info
 import os
@@ -18,8 +18,8 @@ from plumbum.cmd import (
 
 logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO'))
 
-SRANDRD_ACTION = os.environ['SRANDRD_ACTION']
-SRANDRD_EDID = os.environ['SRANDRD_EDID']
+SRANDRD_ACTION = os.environ.get('SRANDRD_ACTION')
+SRANDRD_EDID = os.environ.get('SRANDRD_EDID')
 
 INTERNAL = {
     'output': 'eDP-1',
@@ -48,7 +48,7 @@ PROJECTOR = {
 
 
 def is_connected(output_connection):
-    '''Test whether a given display output is connected'''
+    """Test whether a given display output is connected."""
     try:
         (xrandr | rg['-i', output_connection + ' connected'])()
         return True
@@ -56,20 +56,24 @@ def is_connected(output_connection):
         return False
 
 
-def external_monitor_connected():
-    return SRANDRD_EDID in [EXTERNAL_MONITOR1['edid'], EXTERNAL_MONITOR2['edid']]
+def external_monitor_was_connected():
+    """Return True if an external monitor was just connected."""
+    return SRANDRD_EDID in [EXTERNAL_MONITOR1['edid'],
+                            EXTERNAL_MONITOR2['edid']]
 
 
 def display_was_disconnected():
+    """Return True if a display was just disconnected."""
     return 'disconnected' in SRANDRD_ACTION
 
 
-def projector_connected():
+def projector_was_connected():
+    """Return True if the projector was just connected."""
     return SRANDRD_EDID in PROJECTOR['edid']
 
 
 def is_enabled(output_connection):
-    '''Return True if the device is connected and displaying'''
+    """Return True if the device is connected and displaying."""
     try:
         (xrandr | rg['-i', output_connection + r'.*mm x .*'])()
         return True
@@ -78,28 +82,36 @@ def is_enabled(output_connection):
 
 
 def enable(device):
+    """Activate a device for display."""
     if not is_enabled(device['output']):
         xrandr_args = ['--output', device['output']] + device['flags']
         xrandr.__getitem__(xrandr_args)()
 
 
 def disable(device):
+    """Disable a device."""
     if is_enabled(device['output']):
         xrandr('--output', device['output'], '--off')
 
 
 def launch_polybar():
+    """Relaunch polybar."""
     polybar = local['~/dotfiles/polybar/.config/polybar/launch.sh']
     polybar & BG
 
 
-def connection_changed():
-    output_connection = SRANDRD_ACTION.split(' ')[0]
-    connection_event = SRANDRD_ACTION.split(' ')[1] == "connected"
-    return connection_event != is_enabled(output_connection)
+def connection_was_changed():
+    """Return True if the status of a connection was changed."""
+    if SRANDRD_ACTION:
+        output_connection = SRANDRD_ACTION.split(' ')[0]
+        connection_event = SRANDRD_ACTION.split(' ')[1] == "connected"
+        return connection_event != is_enabled(output_connection)
+    else:
+        return False
 
 
 def handle_disconnection():
+    """Handle the disconnection of a display device."""
     if (not is_connected(EXTERNAL_MONITOR1['output']) and
             not is_connected(EXTERNAL_MONITOR2['output'])):
         info('All external display(s) disconnected, disabling...')
@@ -115,21 +127,27 @@ def handle_disconnection():
         info('-> SRANDRD_ACTION = %s', SRANDRD_ACTION)
 
 
+def enable_external_monitors():
+    """Activate both external monitors and deactivate the internal display."""
+    enable(EXTERNAL_MONITOR1)
+    enable(EXTERNAL_MONITOR2)
+    sleep(10)
+    disable(INTERNAL)
+
+
 def handle_new_connection():
-    if external_monitor_connected():
+    """Handle a new display device connection."""
+    if external_monitor_was_connected():
         if (is_connected(EXTERNAL_MONITOR1['output']) and
                 is_connected(EXTERNAL_MONITOR2['output'])):
             info('Both external monitors connected, enabling them...')
-            enable(EXTERNAL_MONITOR1)
-            enable(EXTERNAL_MONITOR2)
-            sleep(10)
-            disable(INTERNAL)
+            enable_external_monitors()
             info('Successfully enabled external monitors')
             info('Relaunching polybar...')
             launch_polybar()
         else:
             info('New display detected, waiting for extra displays...')
-    elif projector_connected():
+    elif projector_was_connected():
         info('Projector connected, enabling...')
         enable(PROJECTOR)
         info('Projector successfully enabled')
@@ -139,11 +157,15 @@ def handle_new_connection():
 
 
 def main():
-    if connection_changed():
+    if connection_was_changed():
         if display_was_disconnected():
             handle_disconnection()
         else:
             handle_new_connection()
+    else:
+        if (is_connected(EXTERNAL_MONITOR1['output']) and
+                is_connected(EXTERNAL_MONITOR2['output'])):
+            enable_external_monitors()
     sys.exit()
 
 
