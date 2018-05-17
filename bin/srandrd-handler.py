@@ -23,20 +23,23 @@ SRANDRD_EDID = os.environ.get('SRANDRD_EDID')
 
 INTERNAL = {
     'output': 'eDP-1',
-    'flags': ['--dpi', '192', '--mode', '1920x1080']
+    'flags': ['--dpi', '192', '--mode', '3840x2160']
 }
 
 EXTERNAL_MONITOR1 = {
     'output': 'HDMI-1',
     'edid': 'F022318301010101',
-    'flags': ['--auto', '--set', 'Broadcast RGB', 'Full']
+    'flags': ['--mode', '1920x1080',
+              '--scale', '2x2',
+              '--set', 'Broadcast RGB', 'Full']
 }
 
 EXTERNAL_MONITOR2 = {
     'output': 'DP-2',
     'edid': 'F022318301010101',
-    'flags': ['--right-of', EXTERNAL_MONITOR1['output'],
-              '--auto',
+    'flags': ['--mode', '1920x1080',
+              '--pos', '3840x0',
+              '--scale', '2x2',
               '--set', 'Broadcast RGB', 'Full']
 }
 
