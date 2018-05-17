@@ -3,6 +3,10 @@
 ## If the current window's width fills the whole screen, then create a new
 ## horizontal split at the root container. Otherwise split vertically.
 
+# These are hard coded because xdpyinfo/xrandr are slow
+screen_width=3840
+screen_height=2160
+
 function get_window_width() {
     active_window="$(xdotool getactivewindow)"
     xwininfo -id "$active_window" |
@@ -21,20 +25,13 @@ function focus_on_root() {
     i3-msg focus parent focus parent focus parent focus parent focus parent
 }
 
-function get_screen_width() {
-    xdpyinfo | grep dimensions | awk '{print $2}' | awk -F "x" '{print $1}'
-}
 
-function get_screen_height() {
-    xdpyinfo | grep dimensions | awk '{print $2}' | awk -F "x" '{print $2}'
-}
-
-two_thirds_width="$(($(get_screen_width)*2/3))"
+two_thirds_width="$((screen_width*2/3))"
 if [ "$(get_window_width)" -gt "$two_thirds_width" ]; then
     focus_on_root
     i3-msg split horizontal
 else
-    two_thirds_height="$(($(get_screen_height)*2/3))"
+    two_thirds_height="$((screen_height*2/3))"
     window_height="$(get_window_height)"
     if [ "$window_height" -gt "$two_thirds_height" ]; then
         i3-msg split vertical
