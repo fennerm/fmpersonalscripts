@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+## Delete the currently playing song on mpd
+
+music_library=/home/data/music/
+rofi_prompt() {
+    printf "Yes\\nNo\\n" | rofi -dmenu -p "Really delete song?"
+}
+
+response="$(rofi_prompt)"
+
+#If Yes, then 0 is returned, else 1
+
+if [[ "$response" == "Yes" ]]; then
+        song_to_remove=$(mpc | head -n 1)
+        playlist_pos=$(mpc -f %position% | head -n 1)
+        rm "$music_library"/"$(mpc -f %file% | head -n 1)"
+        #Remove the song from playlist
+        mpc del "$playlist_pos"
+fi
