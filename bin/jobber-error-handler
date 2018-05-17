@@ -1,5 +1,38 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
+"""Notification and logging of jobber errors."""
+import sys
 
-LOGS="/home/data/logs/jobber"
-mkdir "$LOGS"
-cat "$@" > "$LOGS/jobber.log"
+import json
+import notify2
+from notify2 import Notification
+from plumbum import local
+import yaml
+
+LOG = local.path('/home/data/logs/jobber/jobber.log')
+ICON = '/usr/share/icons/Classic95/32x32/emblems/emblem-important.png'
+
+def log_error(err_data, logfile=LOG):
+    with logfile.open('w') as f:
+        yaml.dump(err_data, f, allow_unicode=False)
+
+
+def notify(err_data):
+    n = Notification('Jobber Error', err_data['stderr'], icon=ICON)
+    n.show()
+
+
+def jobber_error_handler():
+    err_json = read_input_json()
+    data = json.loads(err_json)
+    notify(data)
+    log_error(data)
+
+
+def read_input_json():
+    err_json = sys.stdin.read()
+    return err_json
+
+
+if __name__ == '__main__':
+    notify2.init('jobber')
+    jobber_error_handler()
