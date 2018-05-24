@@ -12,44 +12,44 @@ LOG="$HOME/data/logs/arch/arch.log"
 OLDLOG="$HOME/data/logs/arch/arch.old.log"
 
 main() {
-    save_old_logfile
-    log_header "FAILED SYSTEMD SERVICES"
-    systemctl --failed >> "$LOG"
-    log_spacer
+	save_old_logfile
+	log_header "FAILED SYSTEMD SERVICES"
+	systemctl --failed >>"$LOG"
+	log_spacer
 
-    log_header "ERRORS IN LOGFILES"
-    journalctl -p 3 -xb >> "$LOG"
-    log_spacer
+	log_header "ERRORS IN LOGFILES"
+	journalctl -p 3 -xb >>"$LOG"
+	log_spacer
 
-    log_header "CLEANING PACKAGE CACHE"
-    pacaur -Sc >> "$LOG"
-    log_spacer
+	log_header "CLEANING PACKAGE CACHE"
+	pacaur -Sc >>"$LOG"
+	log_spacer
 
-    log_header "REMOVING ORPHAN PACKAGES"
-    orphans="$(pacaur -Qtdq)"
-    if [[ -z "$orphans" ]]; then
-        pacaur -Rns --noprogressbar --noconfirm "$orphans" >> "$LOG"
-    fi
+	log_header "REMOVING ORPHAN PACKAGES"
+	orphans="$(pacaur -Qtdq)"
+	if [[ -z "$orphans" ]]; then
+		pacaur -Rns --noprogressbar --noconfirm "$orphans" >>"$LOG"
+	fi
 }
 
 # Save the previous logfile
 save_old_logfile() {
-    if [ -f "$LOG" ]; then
-        mv "$LOG" "$OLDLOG"
-    fi
-    touch "$LOG"
+	if [ -f "$LOG" ]; then
+		mv "$LOG" "$OLDLOG"
+	fi
+	touch "$LOG"
 }
 
 log_header() {
-    header="$1"
-    printf "%s\n" "$header"
-    printf "=========================================================\n" >> "$LOG"
-    printf "%s\n" "$header" >> "$LOG"
-    printf "=========================================================\n" >> "$LOG"
+	header="$1"
+	printf "%s\n" "$header"
+	printf "=========================================================\n" >>"$LOG"
+	printf "%s\n" "$header" >>"$LOG"
+	printf "=========================================================\n" >>"$LOG"
 }
 
 log_spacer() {
-    printf '\n\n' >> "$LOG"
+	printf '\n\n' >>"$LOG"
 }
 
 main "$@"
