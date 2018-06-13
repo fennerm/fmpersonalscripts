@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+## Screen brightness notification script
+
+display_brightness() {
+    brightness="$(light)"
+    brightness="${brightness%%.*}"
+    bar=$(seq -s "━" $((brightness / 4)) | sed 's/[0-9]//g')
+    dunstify -r 33254532 -t 1000 "⯇  $bar"
+}
+
+increase_brightness() {
+    light -A 10
+}
+
+decrease_brightness() {
+    light -U 10
+}
+
+case "$1" in
+"up")
+    increase_brightness
+    ;;
+"down")
+    decrease_brightness
+    ;;
+*) ;;
+
+esac
+display_brightness
