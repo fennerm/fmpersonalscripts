@@ -1,10 +1,11 @@
 from plumbum import local
 
-from fmbiopy.fmpaths import is_empty
+from fmbiopy.paths import is_empty
 
 
-def assert_script_produces_files(script, args, output, redirect=None,
-                                 empty_ok=False, outdir=None):
+def assert_script_produces_files(
+    script, args, output, redirect=None, empty_ok=False, outdir=None
+):
     """Assert that a script with given command line args produces expected files
 
     Parameters
