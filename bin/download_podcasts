@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 ## Download new podcast episodes and rename them with their episode titles.
-podget
+podget --no-playlist
 rename_podcasts.py /home/data/podcasts
