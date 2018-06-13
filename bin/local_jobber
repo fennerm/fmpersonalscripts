@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+## Initialize a local jobber instance
+(/usr/lib/jobber/jobberrunner ~/.jobber &)
+sleep 2
+jobber reload
