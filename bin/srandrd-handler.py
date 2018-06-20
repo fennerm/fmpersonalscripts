@@ -14,10 +14,10 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 SRANDRD_ACTION = os.environ.get("SRANDRD_ACTION")
 SRANDRD_EDID = os.environ.get("SRANDRD_EDID")
 
-INTERNAL = {"output": "eDP-1", "flags": ["--dpi", "192", "--mode", "3840x2160"]}
+INTERNAL = {"output": "eDP1", "flags": ["--dpi", "192", "--mode", "3840x2160"]}
 
 EXTERNAL_MONITOR1 = {
-    "output": "HDMI-1",
+    "output": "HDMI1",
     "edid": "F022318301010101",
     "flags": [
         "--mode",
@@ -31,7 +31,7 @@ EXTERNAL_MONITOR1 = {
 }
 
 EXTERNAL_MONITOR2 = {
-    "output": "DP-2",
+    "output": "DP2",
     "edid": "F022318301010101",
     "flags": [
         "--mode",
@@ -47,7 +47,7 @@ EXTERNAL_MONITOR2 = {
 }
 
 PROJECTOR = {
-    "output": "HDMI-1",
+    "output": "HDMI1",
     "edid": "7436003000000001",
     "flags": ["--mode", "800x600", "--set", "Broadcast RGB", "Full"],
 }
