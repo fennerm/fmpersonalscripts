@@ -1,35 +1,193 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Custom method for searching for bibfiles with papis
 
 By default papis uses flat libraries with no sublibraries for search. This
 script adds support for sublibraries by adding extra rofi menus.
 """
+from collections import OrderedDict
+import string
 import sys
 
+import click
 from plumbum import local, ProcessExecutionError
 from plumbum.cmd import echo, rofi
+import yaml
 
+HISTORY_FILE = local.path("~/.papis-last-picked.txt")
 ROOT = local.path("~/data/bib/papis")
+AUTHOR_WIDTH = 20
 
 
-def pick_from(dir):
-    """Present menu of sublibraries with rofi."""
-    options = "\n".join(["NEW"] + [x.name for x in dir.glob("*")])
-    try:
-        choice = (echo[options] | rofi["-dmenu", "-p", "Library: "])().rstrip()
-    except ProcessExecutionError:
-        sys.exit(1)
-    if choice == "NEW":
-        pick = choice
+def format_dir_as_menu_item(dir):
+    return dir.name.replace("_", " ").title()
+
+
+def get_prev_pick():
+    with HISTORY_FILE.open("r") as f:
+        prev_pick = local.path(f.readline().rstrip())
+    if dir_contains(prev_pick, "info.yaml"):
+        prev_pick = prev_pick.dirname
+    return prev_pick
+
+
+class MenuItem:
+
+    def __init__(self, dir=None):
+        self.location = dir
+        self.author = None
+        self.title = None
+        self.year = None
+
+    def __ge__(self, other):
+        return str(self) > str(other)
+
+    def __le__(self, other):
+        return str(self) < str(other)
+
+
+class NewMenuItem(MenuItem):
+
+    def __str__(self):
+        return "NEW"
+
+    def __ge__(self, other):
+        return True
+
+    def __le__(self, other):
+        return False
+
+
+class PrevChoiceMenuItem(MenuItem):
+
+    def __init__(self):
+        super().__init__()
+        self.location = get_prev_pick()
+
+    def __ge__(self, other):
+        return str(other) != "NEW"
+
+    def __le__(self, other):
+        return str(other) == "NEW"
+
+    def __str__(self):
+        return "> " + format_dir_as_menu_item(self.location)
+
+
+class GroupMenuItem(MenuItem):
+
+    def __str__(self):
+        return format_dir_as_menu_item(self.location)
+
+
+class PaperMenuItem(MenuItem):
+
+    def __init__(self, dir):
+        super().__init__(dir)
+        info_yaml = dir / "info.yaml"
+        with info_yaml.open("r") as f:
+            self.metadata = yaml.load(f)
+        self.author = self.extract_author(self.metadata)
+        self.title = self.extract_title(self.metadata)
+        self.year = self.extract_year(self.metadata)
+
+    def __str__(self):
+        return "\t".join([self.author, self.year, self.title])
+
+    def extract_author(self, metadata):
+        author_split = metadata["author"].split(",")
+        if len(author_split) == 2:
+            # Single Author
+            author = author_split[0]
+        elif len(author_split) == 4:
+            # Two Authors
+            second_author = author_split[1].split()[-1]
+            author = " & ".join([author_split[0], second_author])
+        else:
+            # Multiple authors
+            author = author_split[0] + " et al."
+        if len(author) > AUTHOR_WIDTH:
+            author = author[: AUTHOR_WIDTH - 1] + "…"
+
+        else:
+            author = author.ljust(AUTHOR_WIDTH)
+        return author
+
+    def extract_title(self, metadata):
+        title = metadata["title"]
+        for char in ["{", "}"]:
+            title = title.replace(char, "")
+        return title
+
+    def extract_year(self, metadata):
+        try:
+            year = metadata["date"].split("-")[0]
+        except KeyError:
+            year = "?"
+        return year
+
+
+def menu_sort(item):
+    if isinstance(item, NewMenuItem):
+        key = 999999
+    elif isinstance(item, PrevChoiceMenuItem):
+        key = 999998
+    elif isinstance(item, GroupMenuItem):
+        first_letter = str(item)[0].lower()
+        key = string.ascii_lowercase.index(first_letter)
     else:
-        pick = dir / choice
-    return pick
+        try:
+            key = int(item.year)
+        except ValueError:
+            key = -1
+    return key
 
 
-def at_stop_point(dir):
+class Menu:
+
+    def __init__(self, dir):
+        self.items = self.generate(dir)
+
+    def __str__(self):
+        return "\n".join(self.items.keys())
+
+    def generate(self, dir):
+        menu_items = [NewMenuItem(), PrevChoiceMenuItem()] + [
+            self.map_dir_to_menu_item(d) for d in list_subdirs(dir)
+        ]
+        menu_items.sort(key=menu_sort, reverse=True)
+        item_dict = OrderedDict()
+        for item in menu_items:
+            item_dict[str(item)] = item
+        return item_dict
+
+    def map_dir_to_menu_item(self, dir):
+        if dir_contains(dir, "info.yaml"):
+            return PaperMenuItem(dir)
+        else:
+            return GroupMenuItem(dir)
+
+    def pick(self):
+        choice = (
+            echo[str(self)] | rofi["-dmenu", "-p", "Library: "]
+        )().rstrip()
+        return self.items[choice]
+
+
+def dir_contains(dir, filename):
+    """Return True if directory contains filename."""
+    return bool(dir // filename)
+
+
+def list_subdirs(dir):
+    """Iterate through subdirectories in `dir`."""
+    return [f for f in dir.iterdir() if f.is_dir()]
+
+
+def done_picking(dir, return_type):
     """Return True if there are no sublibraries beyond dir."""
-    subdir = next(dir.iterdir())
-    return subdir / "info.yaml" in subdir.glob("*")
+    if return_type == "group":
+        return all([done_picking(sub, False) for sub in dir.iterdir()])
+    return dir_contains(dir, "info.yaml")
 
 
 def create_new_lib(dir):
@@ -41,19 +199,49 @@ def create_new_lib(dir):
     return new_lib
 
 
-def papis_picker():
+def pick_from(dir):
+    return Menu(dir).pick()
+
+
+def papis_picker(return_type, return_prev_dir):
+    if return_prev_dir:
+        print(get_prev_pick())
+        sys.exit()
+
     choice = ROOT
     while True:
         new_choice = pick_from(choice)
-        if new_choice == "NEW":
+        if isinstance(new_choice, NewMenuItem):
             new_lib = create_new_lib(choice)
             print(new_lib)
             sys.exit()
-        if at_stop_point(choice):
-            print(new_choice)
+        if done_picking(new_choice.location, return_type):
+            with HISTORY_FILE.open("w") as f:
+                print(new_choice.location, file=f)
+            print(new_choice.location)
             sys.exit()
-        choice = new_choice
+        choice = new_choice.location
+
+
+@click.command()
+@click.option(
+    "-g",
+    "--group",
+    is_flag=True,
+    help="If set, a paper group is picked instead of a paper",
+)
+@click.option(
+    "-p",
+    "--prev",
+    is_flag=True,
+    help="If set, just return the previously chosen directory",
+)
+def cli(group, prev):
+    if group:
+        papis_picker(return_type="group", return_prev_dir=prev)
+    else:
+        papis_picker(return_type="paper", return_prev_dir=prev)
 
 
 if __name__ == "__main__":
-    papis_picker()
+    cli()

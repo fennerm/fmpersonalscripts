@@ -52,6 +52,9 @@ def papis_open(dir):
             sys.exit("Failed to find a download pdf for chosen citation.")
     mimeo(pdf_contents)
 
+# OPEN COMMAND
+# i3-msg exec "okular ~/data/bib/papis/nuc_megadaph/nuclear_mutation_rate/44093578c59b64d6a3edcc8ba1b9d7b5-Sung-Way-and-Ackerm/Sung-et-al.---2015---Asymmetric-Context-dependent-Mutation-Patterns-Rev.pdf"; i3-msg split vertical; i3-msg exec "sleep 1 && termite --hold -e vim notes.txt"
+
 
 if __name__ == "__main__":
     dir = sys.argv[1]
