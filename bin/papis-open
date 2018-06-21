@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+"""Open a pdf file associated with a papis directory.
+
+If no pdf exists, attempts to download one from scihub.
+"""
+import os
+import sys
+
+import notify2
+from notify2 import Notification
+from plumbum import local
+from plumbum.cmd import mimeo, mupdf, scihub2pdf, termite
+from scihub.scihub import SciHub
+import yaml
+
+notify2.init("papis_open")
+
+
+def get_search_key(bib_info):
+    """Get a search key for scihub from the info.yml file."""
+    if "doi" in bib_info:
+        search_key = ("doi", bib_info["doi"])
+    elif "pmcid" in bib_info:
+        search_key = ("pmcid", bib_info["pmcid"])
+    elif "title" in bib_info:
+        title = bib_info["title"].replace("{", "").replace("}", "")
+        search_key = ("title", title)
+    else:
+        raise ValueError("Failed to find a scihub query key in yaml file.")
+    return search_key
+
+
+def download_pdf(bib_info):
+    """Download a pdf from scihub."""
+    search_key = get_search_key(bib_info)
+    dest = local.path(bib_info["ref"] + ".pdf")
+    if search_key[0] == "pmcid":
+        sh = SciHub()
+        sh.download(search_key[1], path=dest)
+    elif search_key[0] == "doi":
+        scihub2pdf("-l", dest, search_key[1])
+    elif search_key[0] == "title":
+        scihub2pdf("-t", search_key[1], "-l", dest)
+
+
+def papis_open(dir):
+    try:
+        pdf_contents = (dir // "*.pdf")[0]
+    except IndexError:
+        n = Notification(
+            "papis-open", "No local pdf found, attempting to download ..."
+        )
+        n.show()
+        try:
+            yaml_file = (dir // ("info.yml", "info.yaml"))[0]
+            with yaml_file.open("r") as f:
+                bib_info = yaml.load(f)
+        except IndexError:
+            raise OSError(
+                "Could not find an info.yaml file in the selected directory"
+            )
+        with local.cwd(dir):
+            download_pdf(bib_info)
+        try:
+            pdf_contents = (dir // "*.pdf")[0]
+        except IndexError:
+            n = Notification(
+                "papis-open", "Failed to find a pdf for chosen citation..."
+            )
+            n.show()
+            sys.exit("Failed to find a pdf for chosen citation.")
+
+    command = (
+        "i3-msg exec 'i3split \"mupdf %s\"'; "
+        "i3-msg split vertical; "
+        'i3split "alacritty -e nvim %s/notes.txt"'
+        % (str(pdf_contents), str(dir))
+    )
+    os.system(command)
+
+
+if __name__ == "__main__":
+    dir = sys.argv[1]
+    if dir:
+        papis_open(local.path(dir))

@@ -113,7 +113,7 @@ class PaperMenuItem(MenuItem):
         return author
 
     def extract_title(self, metadata):
-        title = metadata["title"]
+        title = metadata["title"].rstrip().lstrip()
         for char in ["{", "}"]:
             title = title.replace(char, "")
         return title
@@ -122,7 +122,10 @@ class PaperMenuItem(MenuItem):
         try:
             year = metadata["date"].split("-")[0]
         except KeyError:
-            year = "?"
+            try:
+                year = metadata["year"]
+            except KeyError:
+                year = "?"
         return year
 
 
@@ -145,6 +148,7 @@ def menu_sort(item):
 class Menu:
 
     def __init__(self, dir):
+        self.dir = dir
         self.items = self.generate(dir)
 
     def __str__(self):
@@ -168,7 +172,7 @@ class Menu:
 
     def pick(self):
         choice = (
-            echo[str(self)] | rofi["-dmenu", "-p", "Library: "]
+            echo[str(self)] | rofi["-dmenu", "-p", self.dir + ": "]
         )().rstrip()
         return self.items[choice]
 
