@@ -24,14 +24,6 @@ def _template():
     return template
 
 
-def add_hooks():
-    """Add git hooks to the repo."""
-    hooks = [PACKAGE_ROOT / 'bin' / x for x in ['pre-push']]
-    destination = local.path('.git/hooks')
-    for hook in hooks:
-        hook.symlink(destination / hook.name)
-
-
 def add_license():
     """Add MIT license to the project."""
     license_template_filename = PACKAGE_ROOT / 'docs' / 'MIT_LICENSE_STUB'
@@ -97,7 +89,6 @@ def main(name):
         gen_setup(name.name)
         git['init']()
         gen_gitignore()
-        add_hooks()
         add_license()
 
 
