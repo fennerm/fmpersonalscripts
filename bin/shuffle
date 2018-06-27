@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-## Open ncmpcpp and shuffle all songs
-(ashuffle &) > /dev/null 2>&1
-cava
