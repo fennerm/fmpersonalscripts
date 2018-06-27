@@ -2,4 +2,4 @@
 ## Command to be run by Nvim-R when starting R repl
 i3-msg "[title='^nvim.*$'] focus"
 i3-msg split v
-urxvt -name "nvimr" -e "$@"
+alacritty -e "$@"
