@@ -3,6 +3,6 @@
 ## Script SSH's into a given server name on CRC and then sources my .zshrc
 ## Usage:
 ##   fsshrc tesla
-REMOTE="schaack@${1}.ibest.uidaho.edu"
-ssh -Xt "$REMOTE" "ZDOTDIR=/mnt/lfs2/schaack/fmacrae/dotfiles/zsh \
+ssh_address="schaack@${1}.ibest.uidaho.edu"
+ssh -Xt "$ssh_address" "ZDOTDIR=/mnt/lfs2/schaack/fmacrae/dotfiles/zsh \
     /mnt/lfs2/schaack/.linuxbrew/bin/zsh --no-globalrcs"

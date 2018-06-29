@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 ## Update pkgbuild info
+updpkgsums
 makepkg --makepkg --noconfirm -si PKGBUILD
-makepkg --printsrcinfo > .SRCINFO
+makepkg --printsrcinfo >.SRCINFO

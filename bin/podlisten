@@ -3,14 +3,14 @@
 
 trap delete_prompt INT
 
-function next_file() {
+next_file() {
     # Delete the previous file and move on to the next
     echo "Playing next podcast..."
     rm "$1"
     main
 }
 
-function play_file() {
+play_file() {
     # Find an arbitrary file in the directory and listen to it
     if [ -f "$1" ]; then
         echo Playing "$1"...
@@ -21,7 +21,7 @@ function play_file() {
     fi
 }
 
-function delete_prompt() {
+delete_prompt() {
     # Ask if user wishes to delete file. If yes, another file is found and
     # played.
     read -t 20 -rp "Delete file? (y/n) " yn || next_file "$file"
@@ -36,7 +36,7 @@ function delete_prompt() {
     esac
 }
 
-function main() {
+main() {
     if [ "$#" -eq 0 ]; then
         file="$(find . -maxdepth 1 -type f | head -n 1)"
     else

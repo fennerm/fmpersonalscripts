@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 ## Load a default .gitignore for a python repo.
-
-GIG=".gitignore"
-if [ ! -f "$GIG" ]; then
-	URL="https://raw.githubusercontent.com/github/gitignore/master/Python.gitig"
-	URL+="nore"
-	wget -O "$GIG" "$URL" || curl $URL > "$GIG"
+url="https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore"
+if [ ! -f ".gitignore" ]; then
+    wget -O ".gitignore" "$url" || curl "$url" >".gitignore"
 fi

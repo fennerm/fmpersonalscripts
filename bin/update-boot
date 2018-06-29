@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Update boot after changing config
-grub-mkconfig -o /boot/grub/grub.cfg
-mkinitcpio -p linux

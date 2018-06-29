@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 ## Download new podcast episodes and rename them with their episode titles.
 podget --no-playlist
+
+# Due to problem with podget not removing its tempfiles.
+rm -rf "/tmp/podget"
 rename_podcasts.py /home/data/podcasts
