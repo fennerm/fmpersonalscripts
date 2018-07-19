@@ -14,10 +14,11 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 SRANDRD_ACTION = os.environ.get("SRANDRD_ACTION")
 SRANDRD_EDID = os.environ.get("SRANDRD_EDID")
 
-INTERNAL = {"output": "eDP1", "flags": ["--dpi", "192", "--mode", "3840x2160"]}
+INTERNAL = {"output": "eDP-1", "flags": ["--mode", "1920x1080"]}
+# INTERNAL = {"output": "eDP-1", "flags": ["--dpi", "192", "--mode", "3840x2160"]}
 
 EXTERNAL_MONITOR1 = {
-    "output": "HDMI1",
+    "output": "HDMI-1",
     "edid": "F022318301010101",
     "flags": [
         "--mode",
@@ -31,7 +32,7 @@ EXTERNAL_MONITOR1 = {
 }
 
 EXTERNAL_MONITOR2 = {
-    "output": "DP2",
+    "output": "DP-2",
     "edid": "F022318301010101",
     "flags": [
         "--mode",
@@ -47,7 +48,7 @@ EXTERNAL_MONITOR2 = {
 }
 
 PROJECTOR = {
-    "output": "HDMI1",
+    "output": "HDMI-1",
     "edid": "7436003000000001",
     "flags": ["--mode", "800x600", "--set", "Broadcast RGB", "Full"],
 }
@@ -96,10 +97,28 @@ def enable(device):
         xrandr.__getitem__(xrandr_args)()
 
 
+def enable_unknown_output():
+    connected_output = get_output_device()
+    xrandr(
+        "--output",
+        connected_output,
+        "--right-of",
+        INTERNAL["output"],
+        "--set",
+        "Broadcast RGB",
+        "Full",
+        "--auto",
+    )
+
+
 def disable(device):
     """Disable a device."""
     if is_enabled(device["output"]):
         xrandr("--output", device["output"], "--off")
+
+
+def get_output_device():
+    return SRANDRD_ACTION.split()[0]
 
 
 def launch_polybar():
@@ -149,23 +168,23 @@ def enable_external_monitors():
 def handle_new_connection():
     """Handle a new display device connection."""
     if external_monitor_was_connected():
-        if is_connected(EXTERNAL_MONITOR1["output"]) and is_connected(
-            EXTERNAL_MONITOR2["output"]
-        ):
+        monitor1_connected = is_connected(EXTERNAL_MONITOR1["output"])
+        monitor2_connected = is_connected(EXTERNAL_MONITOR2["output"])
+        if monitor1_connected and monitor2_connected:
             info("Both external monitors connected, enabling them...")
             enable_external_monitors()
             info("Successfully enabled external monitors")
             info("Relaunching polybar...")
             launch_polybar()
         else:
-            info("New display detected, waiting for extra displays...")
+            info("One monitor detected, waiting for the second...")
     elif projector_was_connected():
         info("Projector connected, enabling...")
         enable(PROJECTOR)
         info("Projector successfully enabled")
     else:
-        info("Unrecognized display connected, shutting down...")
-        sys.exit(1)
+        info("Unrecognized display connected, autoconfiguring...")
+        enable_unknown_output()
 
 
 def main():
@@ -179,9 +198,7 @@ def main():
             EXTERNAL_MONITOR2["output"]
         ):
             enable_external_monitors()
-    sys.exit()
 
 
 if __name__ == "__main__":
     main()
-    sys.exit()

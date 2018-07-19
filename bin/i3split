@@ -4,8 +4,8 @@
 ## horizontal split at the root container. Otherwise split vertically.
 
 # These are hard coded because xdpyinfo/xrandr are slow
-screen_width=3840
-screen_height=2160
+screen_width=1920
+screen_height=1080
 
 function get_window_width() {
     active_window="$(xdotool getactivewindow)"
