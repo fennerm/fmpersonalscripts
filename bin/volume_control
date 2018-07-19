@@ -4,17 +4,17 @@
 ## $./volume_control down
 ## $./volume_control mute
 
-function get_volume() {
+get_volume() {
     pamixer --get-volume
     # amixer get Master | grep '%' | head -n 1 | cut -d '[' -f 2 | cut -d '%' -f 1
 }
 
-function is_mute() {
+is_mute() {
     pamixer --get-mute
     #amixer get Master | grep '%' | grep -oE '[^ ]+$' | grep off >/dev/null
 }
 
-function send_notification() {
+send_notification() {
     volume=$(get_volume)
     # Make the bar with the special character ─ (it's not dash -)
     # https://en.wikipedia.org/wiki/Box-drawing_character
