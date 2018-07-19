@@ -29,10 +29,7 @@ Options:
                         [default:".git"]
 """
 from docopt import docopt
-from plumbum import (
-    FG,
-    local,
-)
+from plumbum import FG, local
 from plumbum.cmd import rsync
 
 
@@ -43,9 +40,10 @@ def local_to_remote(local_file, local_root, remote_root):
     return remote_local_file
 
 
-def construct_rsync_command(method, local_file, remote_file, remote_address,
-                            exclude, max_size):
-    args = ['--update', '-ravz', '--exclude', exclude]
+def construct_rsync_command(
+    method, local_file, remote_file, remote_address, exclude, max_size
+):
+    args = ["-L", "--update", "-ravz", "--exclude", exclude]
 
     if max_size:
         args = args + ["--max-size", max_size]
@@ -61,16 +59,24 @@ def construct_rsync_command(method, local_file, remote_file, remote_address,
     return rsync.__getitem__(args)
 
 
-def main(method, local_file, remote_address, max_size, remote_root, local_root,
-         exclude):
+def main(
+    method,
+    local_file,
+    remote_address,
+    max_size,
+    remote_root,
+    local_root,
+    exclude,
+):
     remote_file = local_to_remote(local_file, local_root, remote_root)
-    rsync_command = construct_rsync_command(method, local_file, remote_file,
-                                            remote_address, exclude, max_size)
+    rsync_command = construct_rsync_command(
+        method, local_file, remote_file, remote_address, exclude, max_size
+    )
     print("Running: " + str(rsync_command))
     rsync_command & FG
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     opt = docopt(__doc__)
 
     if opt["TARGET"] == "Current working directory":
@@ -93,4 +99,5 @@ if __name__ == '__main__':
         max_size=max_size,
         remote_root=local.path(opt["--remote_root"]),
         local_root=local.path(opt["--local_root"]),
-        exclude=opt["--exclude"])
+        exclude=opt["--exclude"],
+    )
