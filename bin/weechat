@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+SESSIONNAME="script"
+tmux has-session -t $SESSIONNAME &> /dev/null
+
+if [ $? != 0 ]
+then
+    tmux new-session -s $SESSIONNAME -n weechat -d
+    tmux send-keys -t $SESSIONNAME "weechat" C-m
+fi
+
+tmux attach -t $SESSIONNAME
