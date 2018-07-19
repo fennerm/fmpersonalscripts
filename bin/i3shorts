@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+## Script for printing i3 shortcuts
+local sel
+sel=cat
+if [[ x$1 != x ]] ; then sel="fgrep $1"; fi
+egrep -r "^ *bindsym" ~/.i3/config |
+    sed -e 's/bindsym *//' -e 's/--release *//' -e 's/ / => /' |
+    $sel
