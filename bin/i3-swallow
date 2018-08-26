@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+err="$(/usr/bin/i3-swallow "$@" 2>&1)"
+
+if [[ "$err" = *"no process attached"* ]]; then
+    kill -9 "$PPID"
+fi
+
