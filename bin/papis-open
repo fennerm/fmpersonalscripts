@@ -9,7 +9,7 @@ import sys
 import notify2
 from notify2 import Notification
 from plumbum import local
-from plumbum.cmd import mimeo, mupdf, scihub2pdf, termite
+from plumbum.cmd import mimeo, scihub2pdf, termite, zathura
 from scihub.scihub import SciHub
 import yaml
 
@@ -71,7 +71,7 @@ def papis_open(dir):
             sys.exit("Failed to find a pdf for chosen citation.")
 
     command = (
-        "i3-msg exec 'i3split \"mupdf %s\"'; "
+        "i3-msg exec 'i3split \"zathura %s\"'; "
         "i3-msg split vertical; "
         'i3split "alacritty -e nvim %s/notes.txt"'
         % (str(pdf_contents), str(dir))
@@ -80,6 +80,9 @@ def papis_open(dir):
 
 
 if __name__ == "__main__":
-    dir = sys.argv[1]
+    try:
+        dir = sys.argv[1]
+    except IndexError:
+        sys.exit("Error: No input file")
     if dir:
         papis_open(local.path(dir))

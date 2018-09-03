@@ -31,7 +31,6 @@ def get_prev_pick():
 
 
 class MenuItem:
-
     def __init__(self, dir=None):
         self.location = dir
         self.author = None
@@ -46,7 +45,6 @@ class MenuItem:
 
 
 class NewMenuItem(MenuItem):
-
     def __str__(self):
         return "NEW"
 
@@ -58,7 +56,6 @@ class NewMenuItem(MenuItem):
 
 
 class PrevChoiceMenuItem(MenuItem):
-
     def __init__(self):
         super().__init__()
         self.location = get_prev_pick()
@@ -74,13 +71,11 @@ class PrevChoiceMenuItem(MenuItem):
 
 
 class GroupMenuItem(MenuItem):
-
     def __str__(self):
         return format_dir_as_menu_item(self.location)
 
 
 class PaperMenuItem(MenuItem):
-
     def __init__(self, dir):
         super().__init__(dir)
         info_yaml = dir / "info.yaml"
@@ -146,7 +141,6 @@ def menu_sort(item):
 
 
 class Menu:
-
     def __init__(self, dir):
         self.dir = dir
         self.items = self.generate(dir)
