@@ -1,31 +1,45 @@
 #!/usr/bin/env bash
 ## Record screen as a gif
-
-# Script is structured as an on-off switch which is given a key-binding.
+# Script is structured as an on-off switch which is assigned a key-binding.
 # On the first activation, the script starts recording the screen. On the second
 # activation, the recording is terminated and the output gif is produced.
 # Notifications are used to update on progress.
+ICON="/usr/share/icons/Arc/devices/camera.png"
+OUTDIR="$HOME/data/videos/screen_recordings"
+
+record_screen_to_mp4() {
+    local record_time="$1"
+    local output="$2"
+    ffmpeg \
+        -f x11grab \
+        -s "$(screendim)" \
+        -t "$record_time" \
+        -r 25 \
+        -i :0.0 \
+        "$output"
+}
+
+main() {
+    local timestamp="$(date -d "today" +"%Y%m%d%H%M")"
+    local tmpdir="/tmp/screenrecord/${timestamp}"
+    mkdir -p "$tmpdir"
+
+    # Record entire screen. Limit recording to a max of 60s
+    record_screen_to_mp4 60 "${tmpdir}/out.mp4"
+    notify-send "Recording complete, converting to gif..." -i "$ICON"
+
+    # Convert to series of png
+    ffmpeg -i "$tmpdir"/out.mp4 -vf fps=25 "$tmpdir"/frame%03d.png
+
+    # Convert to gif
+    gifski -o "$OUTDIR"/screencap_"$timestamp".gif "$tmpdir"/frame*.png
+    notify-send "Gif produced, shutting down..." -i "$ICON"
+
+    rm -rf "$tmpdir"
+}
+
 if pgrep ffmpeg; then
     killall ffmpeg
 else
-    timestamp="$(date -d "today" +"%Y%m%d%H%M")"
-    icon="/usr/share/icons/Arc/devices/camera.png"
-    tmpdir="/tmp/screenrecord/${timestamp}"
-    mkdir -p "$tmpdir"
-    outdir="$HOME/data/videos/screen_recordings"
-
-    # Record entire screen. Limit recording to a max of 60s
-    ffmpeg -f x11grab -s "$(screendim)" -t 60 -r 25 -i :0.0 \
-        "${tmpdir}/out.mp4"
-
-    notify-send "Recording complete, converting to gif..." -i "$icon"
-    # Convert to series of png
-    ffmpeg -i "${tmpdir}/out.mp4" -vf fps=25 "${tmpdir}"/frame%03d.png
-
-    # Convert to gif
-    gifski -o "${outdir}/screencap_${timestamp}.gif" "$tmpdir"/frame*.png
-
-    notify-send "Gif produced, shutting down..." -i "$icon"
-    # Cleanup
-    rm -rf "$tmpdir"
+    main
 fi

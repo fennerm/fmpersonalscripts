@@ -8,16 +8,17 @@ from notify2 import Notification
 from plumbum import local
 import yaml
 
-LOG = local.path('/home/data/logs/jobber/jobber.log')
-ICON = '/usr/share/icons/Classic95/32x32/emblems/emblem-important.png'
+LOG = local.path("/home/data/logs/jobber/jobber.log")
+ICON = "/usr/share/icons/Classic95/32x32/emblems/emblem-important.png"
+
 
 def log_error(err_data, logfile=LOG):
-    with logfile.open('w') as f:
+    with logfile.open("w") as f:
         yaml.dump(err_data, f, allow_unicode=False)
 
 
 def notify(err_data):
-    n = Notification('Jobber Error', err_data['stderr'], icon=ICON)
+    n = Notification("Jobber Error", err_data["stderr"], icon=ICON)
     n.show()
 
 
@@ -33,6 +34,6 @@ def read_input_json():
     return err_json
 
 
-if __name__ == '__main__':
-    notify2.init('jobber')
+if __name__ == "__main__":
+    notify2.init("jobber")
     jobber_error_handler()
