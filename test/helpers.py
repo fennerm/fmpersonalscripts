@@ -1,6 +1,10 @@
+import os
+
 from plumbum import local
 
-from fmbiopy.paths import is_empty
+
+def is_empty(f):
+    return os.stat(f).st_size == 0
 
 
 def assert_script_produces_files(
