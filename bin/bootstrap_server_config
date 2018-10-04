@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+cd "$HOME"
+
+# Install linuxbrew
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+
+export PATH="$HOME/.linuxbrew/bin:$PATH"
+brew install python python3 zsh
+pip3 install plumbum dotdrop docopt click
+pip install plumbum dotdrop docopt click
+git clone git@github.com:fennerm/dotfiles
+DOTREPO="$HOME/dotfiles"
+eval $(grep -v "^#" $DOTREPO/.env); $DOTREPO/dotdrop.sh \
+    -c "$DOTREPO"/config.yaml install
