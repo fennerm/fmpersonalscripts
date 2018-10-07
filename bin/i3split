@@ -7,21 +7,21 @@
 screen_width=1920
 screen_height=1080
 
-function get_window_width() {
+get_window_width() {
     active_window="$(xdotool getactivewindow)"
     xwininfo -id "$active_window" |
-        grep Width |
+        grep -a Width |
         sed 's/Width:\s//'
 }
 
-function get_window_height() {
+get_window_height() {
     active_window="$(xdotool getactivewindow)"
     xwininfo -id "$active_window" |
-        grep Height |
+        grep -a Height |
         sed 's/Height:\s//'
 }
 
-function focus_on_root() {
+focus_on_root() {
     i3-msg focus parent focus parent focus parent focus parent focus parent
 }
 

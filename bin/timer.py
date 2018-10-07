@@ -22,7 +22,7 @@ def re_to_int(regex):
 def split_time_string(time_string):
     """Split time string into a tuple of form (hours, minutes, seconds)."""
     time_string = time_string.lower()
-    hms = [re.search('(\d+)' + x, time_string) for x in ['h', 'm', 's']]
+    hms = [re.search("(\d+)" + x, time_string) for x in ["h", "m", "s"]]
     hms = [re_to_int(regex) for regex in hms]
     return hms[0], hms[1], hms[2]
 
@@ -50,20 +50,20 @@ def to_seconds(time_string):
 
 
 @click.command()
-@click.option('--name', '-n', help='Name of task')
-@click.argument('time_string')
+@click.option("--name", "-n", help="Name of task")
+@click.argument("time_string")
 def timer(time_string, name):
     """Send notification after time is complete.
 
     Time should be formatted with hms e.g 1h30m or 3h20m30s.
     """
-    notify2.init('timer')
-    print('Starting timer!')
+    notify2.init("timer")
+    print("Starting timer!")
     sleep(to_seconds(time_string))
-    print('Done!')
-    n = Notification('Timer finished!', name)
+    print("Done!")
+    n = Notification("Timer finished!", name)
     n.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     timer()
