@@ -141,34 +141,41 @@ def menu_sort(item):
 
 
 class Menu:
-    def __init__(self, dir):
+    def __init__(self, dir, recursive=False):
         self.dir = dir
-        self.items = self.generate(dir)
+        self.recursive = recursive
+        self.items = self.generate()
 
     def __str__(self):
         return "\n".join(self.items.keys())
 
-    def generate(self, dir):
-        menu_items = [NewMenuItem(), PrevChoiceMenuItem()] + [
-            self.map_dir_to_menu_item(d) for d in list_subdirs(dir)
-        ]
+    def generate(self):
+        menu_items = [NewMenuItem(), PrevChoiceMenuItem()]
+        x = list(list_all_papers(self.dir))
+        if self.recursive:
+            menu_items += [PaperMenuItem(d) for d in list_all_papers(self.dir)]
+        else:
+            menu_items += [
+                map_dir_to_menu_item(d) for d in list_subdirs(self.dir)
+            ]
         menu_items.sort(key=menu_sort, reverse=True)
         item_dict = OrderedDict()
         for item in menu_items:
             item_dict[str(item)] = item
         return item_dict
 
-    def map_dir_to_menu_item(self, dir):
-        if dir_contains(dir, "info.yaml"):
-            return PaperMenuItem(dir)
-        else:
-            return GroupMenuItem(dir)
-
     def pick(self):
         choice = (
             echo[str(self)] | rofi["-dmenu", "-p", self.dir + ": "]
         )().rstrip()
         return self.items[choice]
+
+
+def map_dir_to_menu_item(dir):
+    if dir_contains(dir, "info.yaml"):
+        return PaperMenuItem(dir)
+    else:
+        return GroupMenuItem(dir)
 
 
 def dir_contains(dir, filename):
@@ -179,6 +186,11 @@ def dir_contains(dir, filename):
 def list_subdirs(dir):
     """Iterate through subdirectories in `dir`."""
     return [f for f in dir.iterdir() if f.is_dir()]
+
+
+def list_all_papers(dir):
+    dir_contents = dir.walk(filter=lambda x: x.is_dir())
+    return [d for d in dir_contents if dir_contains(d, "info.yaml")]
 
 
 def done_picking(dir, return_type):
@@ -201,11 +213,14 @@ def pick_from(dir):
     return Menu(dir).pick()
 
 
-def papis_picker(return_type, return_prev_dir):
-    if return_prev_dir:
-        print(get_prev_pick())
-        sys.exit()
+def pick_from_all():
+    choice = Menu(ROOT, recursive=True).pick()
+    with HISTORY_FILE.open("w") as f:
+        print(choice.location, file=f)
+    print(choice.location)
 
+
+def pick_from_labels(return_type):
     choice = ROOT
     while True:
         new_choice = pick_from(choice)
@@ -234,11 +249,22 @@ def papis_picker(return_type, return_prev_dir):
     is_flag=True,
     help="If set, just return the previously chosen directory",
 )
-def cli(group, prev):
-    if group:
-        papis_picker(return_type="group", return_prev_dir=prev)
+@click.option(
+    "-a",
+    "--all",
+    is_flag=True,
+    help="If set, show all files, ignoring directories.",
+)
+def cli(group, prev, all):
+    if prev:
+        print(get_prev_pick())
+    elif all:
+        pick_from_all()
     else:
-        papis_picker(return_type="paper", return_prev_dir=prev)
+        if group:
+            pick_from_labels(return_type="group")
+        else:
+            pick_from_labels(return_type="paper")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+from plumbum import local
+
+
+def recursive_listdir(directory):
+    work_queue = [local.path(directory)]
+    contents = []
+    while work_queue:
+        work_item = work_queue.pop()
+        if work_item.is_dir():
+            work_queue += work_item.list()
+        else:
+            contents.append(work_item)
+    return contents
+
+
+def papis_sync_bibtex():
+    master_bibfile = local.path(local.env["BIBFILE"])
+    papis_dir = local.path(local.env["PAPISDIR"])
+    with master_bibfile.open("w") as output_bib:
+        for item in recursive_listdir(papis_dir):
+            if item.name == "info.bib":
+                with item.open("r") as f:
+                    output_bib.write(f.read().strip() + "\n")
+
+
+if __name__ == "__main__":
+    papis_sync_bibtex()

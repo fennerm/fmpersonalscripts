@@ -70,13 +70,14 @@ def papis_open(dir):
             n.show()
             sys.exit("Failed to find a pdf for chosen citation.")
 
-    command = (
-        "i3-msg exec 'i3split \"zathura %s\"'; "
-        "i3-msg split vertical; "
-        'i3split "alacritty -e nvim %s/notes.txt"'
-        % (str(pdf_contents), str(dir))
-    )
-    os.system(command)
+    os.system("i3-msg exec 'i3split \"zathura %s\"'" % str(pdf_contents))
+    # command = (
+    #     "i3-msg exec 'i3split \"zathura %s\"'; "
+    #     "i3-msg split vertical; "
+    #     'i3split "alacritty -e nvim %s/notes.txt"'
+    #     % (str(pdf_contents), str(dir))
+    # )
+    # os.system(command)
 
 
 if __name__ == "__main__":
