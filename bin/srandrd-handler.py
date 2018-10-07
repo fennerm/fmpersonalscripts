@@ -15,20 +15,43 @@ SRANDRD_ACTION = os.environ.get("SRANDRD_ACTION")
 SRANDRD_EDID = os.environ.get("SRANDRD_EDID")
 
 INTERNAL = {"output": "eDP-1", "flags": ["--mode", "1920x1080"]}
+
+# Config for highdpi
 # INTERNAL = {"output": "eDP-1", "flags": ["--dpi", "192", "--mode", "3840x2160"]}
+# EXTERNAL_MONITOR1 = {
+#     "output": "HDMI-1",
+#     "edid": "F022318301010101",
+#     "flags": [
+#         "--mode",
+#         "1920x1080",
+#         "--scale",
+#         "2x2",
+#         "--set",
+#         "Broadcast RGB",
+#         "Full",
+#     ],
+# }
+#
+# EXTERNAL_MONITOR2 = {
+#     "output": "DP-2",
+#     "edid": "F022318301010101",
+#     "flags": [
+#         "--mode",
+#         "1920x1080",
+#         "--pos",
+#         "3840x0",
+#         "--scale",
+#         "2x2",
+#         "--set",
+#         "Broadcast RGB",
+#         "Full",
+#     ],
+# }
 
 EXTERNAL_MONITOR1 = {
     "output": "HDMI-1",
     "edid": "F022318301010101",
-    "flags": [
-        "--mode",
-        "1920x1080",
-        "--scale",
-        "2x2",
-        "--set",
-        "Broadcast RGB",
-        "Full",
-    ],
+    "flags": ["--mode", "1920x1080", "--set", "Broadcast RGB", "Full"],
 }
 
 EXTERNAL_MONITOR2 = {
@@ -38,9 +61,7 @@ EXTERNAL_MONITOR2 = {
         "--mode",
         "1920x1080",
         "--pos",
-        "3840x0",
-        "--scale",
-        "2x2",
+        "1920x0",
         "--set",
         "Broadcast RGB",
         "Full",
@@ -123,7 +144,7 @@ def get_output_device():
 
 def launch_polybar():
     """Relaunch polybar."""
-    polybar = local["~/dotfiles/polybar/.config/polybar/launch.sh"]
+    polybar = local["~/dotfiles/dotfiles/polybar/.config/polybar/launch.sh"]
     polybar & BG
 
 
