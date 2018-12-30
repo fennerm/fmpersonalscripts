@@ -1,15 +1,38 @@
 #!/usr/bin/env bash
 
-cd "$HOME"
+CODE_DIR="$HOME/code"
 
-# Install linuxbrew
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
 
-export PATH="$HOME/.linuxbrew/bin:$PATH"
-brew install python python3 zsh
-pip3 install plumbum dotdrop docopt click
-pip install plumbum dotdrop docopt click
-git clone git@github.com:fennerm/dotfiles
-DOTREPO="$HOME/dotfiles"
-eval $(grep -v "^#" $DOTREPO/.env); $DOTREPO/dotdrop.sh \
-    -c "$DOTREPO"/config.yaml install
+install_linuxbrew() {
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+    export PATH="$HOME/.linuxbrew/bin:$PATH"
+}
+
+clone_personal_repos() {
+    mkdir -p "$CODE_DIR"
+    pushd "$CODE_DIR"
+    git clone git@github.com:fennerm/fmpersonalscripts
+    git clone git@github.com:fennerm/fmbiopy
+    git clone git@github.com:fennerm/task
+    git clone git@github.com:fennerm/git_hooks
+    popd
+}
+
+
+install_dev_environment() {
+    git clone git@github.com:fennerm/dotfiles
+    dotfiles/scripts/install_essentials.sh "all"
+    DOTREPO="$HOME/dotfiles"
+    eval $(grep -v "^#" $DOTREPO/.env); $DOTREPO/dotdrop.sh \
+        -c "$DOTREPO"/config.yaml install
+}
+
+main() {
+    pushd "$HOME"
+    install_linuxbrew
+    install_dev_environment
+    clone_personal_repos
+    popd
+}
+
+main

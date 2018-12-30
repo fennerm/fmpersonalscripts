@@ -4,6 +4,12 @@
 ## $./volume_control down
 ## $./volume_control mute
 
+# Length of time that notification stays on screen
+NOTIF_TIME=1000
+
+# App name passed to dunst
+APPNAME="volume_control"
+
 get_volume() {
     pamixer --get-volume
     # amixer get Master | grep '%' | head -n 1 | cut -d '[' -f 2 | cut -d '%' -f 1
@@ -14,13 +20,20 @@ is_mute() {
     #amixer get Master | grep '%' | grep -oE '[^ ]+$' | grep off >/dev/null
 }
 
-send_notification() {
+
+dunst_notify() {
+    local contents="$1"
+    dunstify -a "$APPNAME" -t "$NOTIF_TIME" "$contents"
+}
+
+
+send_level_notification() {
     volume=$(get_volume)
     # Make the bar with the special character ─ (it's not dash -)
     # https://en.wikipedia.org/wiki/Box-drawing_character
     bar="$(seq -s "━" $((volume / 4)) | sed 's/[0-9]//g')"
     # Send the notification
-    dunstify -t 1000 -r 2593 "⮞  $bar"
+    dunst_notify "⮞  $bar"
 }
 
 case $1 in
@@ -30,17 +43,17 @@ up)
     # # Up the volume (+ 5%)
     # amixer -D pulse sset Master 5%+ >/dev/null
     pamixer -u -i 5
-    send_notification
+    send_level_notification
     ;;
 down)
     # amixer -D pulse set Master on >/dev/null
     # amixer -D pulse sset Master 5%- >/dev/null
     pamixer -d 5
-    send_notification
+    send_level_notification
     ;;
 mute)
     # Mute
     pamixer -m
-    dunstify -r 2593 -t 1000 -u normal "⮞ "
+    dunst_notify "⮞ "
     ;;
 esac

@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+from plumbum.cmd import echo, rofi
+import i3ipc
+import subprocess
+import re
+
+i3 = i3ipc.Connection()
+
+
+def get_scratchpad_windows():
+    scratchpad_containers = i3.get_tree().scratchpad().descendents()
+    return filter(lambda c: c.type == "con" and c.name, scratchpad_containers)
+
+
+def rofi_choose(options):
+    """ Show a dmenu to choose a string item from a list of *options*. """
+    choice = (echo["\n".join(options)] | rofi["-dmenu", "-p", "scratch"])().rstrip()
+    return choice
+
+
+def main():
+    scratchpad_windows = get_scratchpad_windows()
+    window_titles = [w.name for w in scratchpad_windows]
+    if window_titles:
+        window_to_restore = re.escape(rofi_choose(window_titles).strip())
+        i3.command('[title="{}"] scratchpad show'.format(window_to_restore))
+
+
+if __name__ == "__main__":
+    main()

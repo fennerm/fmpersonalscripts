@@ -60,13 +60,7 @@ def construct_rsync_command(
 
 
 def main(
-    method,
-    local_file,
-    remote_address,
-    max_size,
-    remote_root,
-    local_root,
-    exclude,
+    method, local_file, remote_address, max_size, remote_root, local_root, exclude
 ):
     remote_file = local_to_remote(local_file, local_root, remote_root)
     rsync_command = construct_rsync_command(

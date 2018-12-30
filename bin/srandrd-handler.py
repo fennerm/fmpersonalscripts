@@ -3,7 +3,6 @@
 import logging
 from logging import info
 import os
-import sys
 from time import sleep
 
 from plumbum import BG, local, ProcessExecutionError
@@ -86,10 +85,7 @@ def is_connected(output_connection):
 
 def external_monitor_was_connected():
     """Return True if an external monitor was just connected."""
-    return SRANDRD_EDID in [
-        EXTERNAL_MONITOR1["edid"],
-        EXTERNAL_MONITOR2["edid"],
-    ]
+    return SRANDRD_EDID in [EXTERNAL_MONITOR1["edid"], EXTERNAL_MONITOR2["edid"]]
 
 
 def display_was_disconnected():

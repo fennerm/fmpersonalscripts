@@ -8,9 +8,7 @@ import i3
 def main(target):
     for workspace in i3.get_workspaces():
         if workspace["num"] == target:
-            i3.command(
-                "workspace number {} {}".format(str(target), workspace["name"])
-            )
+            i3.command("workspace number {} {}".format(str(target), workspace["name"]))
             sys.exit()
     i3.command("workspace " + str(target))
 
