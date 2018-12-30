@@ -1,41 +1,12 @@
-#!/usr/bin/env python
-"""Fork a remote repo and set it up for a pull request
+#!/usr/bin/env bash
 
-Usage:
-  init-pull-req REMOTE
-
-Inputs:
-  REMOTE    'username/repo'
-"""
-import click
-from plumbum import FG, local, ProcessExecutionError
-from plumbum.cmd import hub
-
-
-def parse_github_repo(repo):
-    repo_split = remote.split("/")
-    user = repo_split[-2]
-    repo = repo_split[-1]
-    return user, repo
-
-
-@click.command()
-@click.argument("remote")
-def forkclone(remote):
-    user, repo = parse_github_repo(remote)
-    remote_address = "/".join(["https://github.com", user, repo])
-    hub["clone", "--recurse-submodules", remote_address] & FG
-    cloned_directory = local.cwd / repo
-    with local.cwd(cloned_directory):
-        try:
-            hub["fork"] & FG
-        except ProcessExecutionError:
-            # Thrown if the repo is already forked
-            pass
-        hub["pull"] & FG
-        hub["remote", "add", user, remote_address] & FG
-        hub["branch", "--set-upstream-to=origin/master", "master"] & FG
-
-
-if __name__ == "__main__":
-    forkclone()
+# Remove www. which messes with hub for some reason
+remote="$(echo $1 | sed 's/www.//')"
+repo="$(basename "$remote")"
+github_username="$(git config github.user)"
+hub clone --recurse-submodules "$remote"
+cd "$repo"
+hub fork
+hub remote rename origin upstream
+hub remote rename "$github_username" origin
+hub remote -v
